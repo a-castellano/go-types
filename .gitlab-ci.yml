@@ -108,9 +108,9 @@ code_coverage_report:
   script:
     - make coverhtml
   only:
-  - master
+    - master
   dependencies:
-  - coverage
+    - coverage
   artifacts:
     name: "coverage-$CI_PIPELINE_ID"
     paths:
@@ -121,22 +121,24 @@ code_coverage_report:
 scan:
   stage: scan
   only:
-  - master
+    - master
   image: daedalusproject/base_sonar_scanner
+  before_script:
+    - rm coverage.html
   script:
-  - sonar-scanner -Dsonar.projectKey=go-types -Dsonar.sources=. -Dsonar.host.url=https://sonarqube.windmaker.net -Dsonar.login=${SONAR_LOGIN} -Dsonar.exclusions="*/*_test.go" -Dsonar.go.coverage.reportPaths="cover/coverage.report"
+    - sonar-scanner -Dsonar.projectKey=go-types -Dsonar.sources=. -Dsonar.host.url=https://sonarqube.windmaker.net -Dsonar.login=${SONAR_LOGIN} -Dsonar.exclusions="*/*_test.go" -Dsonar.go.coverage.reportPaths="cover/coverage.report"
   dependencies:
-  - coverage
+    - coverage
 
 pages:
   stage: deploy
   image: registry.windmaker.net:5005/a-castellano/limani/base:202406041901
   script:
-  - cp coverage.html public/
+    - cp coverage.html public/
   artifacts:
     paths:
     - public
   only:
-  - master
+    - master
   dependencies:
-  - code_coverage_report
+    - code_coverage_report
