@@ -9,15 +9,15 @@ import (
 
 // RabbitmqConfig defines required data for connecting to RabbitMQ server
 
-type RabbitmqConfig struct {
+type config struct {
 	Host     string
 	Port     int
 	User     string
 	Password string
 }
 
-func NewRabbitmqConfig() (*RabbitmqConfig, error) {
-	config := new(RabbitmqConfig)
+func NewRabbitmqConfig() (*config, error) {
+	config := new(config)
 
 	// Get Host from RABBITMQ_HOST env variable
 	config.Host = cmp.Or(os.Getenv("RABBITMQ_HOST"), "localhost")
