@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-// Config defines required data for connecting to RabbitMQ server
+// Config is a type that defines required data for connecting to RabbitMQ server
 
 type Config struct {
 	host     string
@@ -16,7 +16,7 @@ type Config struct {
 	password string
 }
 
-// NewConfig validates and returns Config instance
+// NewConfig is the function that validates and returns Config instance
 
 func NewConfig() (*Config, error) {
 	config := new(Config)
