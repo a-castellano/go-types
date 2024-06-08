@@ -120,6 +120,8 @@ code_coverage_report:
 
 scan:
   stage: scan
+  only:
+  - master
   image: daedalusproject/base_sonar_scanner
   script:
   - sonar-scanner -Dsonar.projectKey=go-types -Dsonar.sources=. -Dsonar.host.url=https://sonarqube.windmaker.net -Dsonar.login=${SONAR_LOGIN} -Dsonar.exclusions="*/*_test.go" -Dsonar.go.coverage.reportPaths="cover/coverage.report"
