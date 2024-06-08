@@ -3,8 +3,12 @@ image: registry.windmaker.net:5005/a-castellano/limani/base_golang_1_22:20240604
 stages:
     - unit_tests
 
-unit_tests:
+rabbitmq_unit_tests:
   stage: unit_tests
+  only:
+    - develop
+    - master
+    - *rabbitmq*
   before_script:
     - export CC=/usr/bin/clang
     - export GOPATH="$(pwd)/go"
@@ -16,5 +20,5 @@ unit_tests:
   script:
     - echo $GOPATH
     - pwd
-    - make test
+    - make test_rabbitmq
 

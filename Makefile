@@ -3,7 +3,7 @@ PKG := "github.com/a-castellano/$(PROJECT_NAME)"
 PKG_LIST := $(shell go list ${PKG}/... | grep -v /vendor/)
 GO_FILES := $(shell find . -name '*.go' | grep -v /vendor/ | grep -v _test.go)
 
-.PHONY: all build clean test coverage coverhtml lint
+.PHONY: all build clean test test_integration test_rabbitmq coverage coverhtml lint
 
 all: build
 
@@ -15,6 +15,9 @@ test: ## Run unit tests
 
 test_integration: ## Run integration tests
 	@go test --tags=integration_tests -short ./...
+
+test_rabbitmq: ## Run rabbitmq realted tests
+	@go test --tags=rabbitmq_tests -short ./...
 
 race: ## Run data race detector
 	@go test -race -short ${PKG_LIST}

@@ -1,3 +1,5 @@
+//go:build integration_tests || unit_tests || rabbitmq_tests
+
 package rabbitmq
 
 import "testing"
