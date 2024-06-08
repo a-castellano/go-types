@@ -8,7 +8,7 @@ rabbitmq_unit_tests:
   only:
     - develop
     - master
-    - *rabbitmq*
+    - /^.*rabbitmq.*$/
   before_script:
     - export CC=/usr/bin/clang
     - export GOPATH="$(pwd)/go"
