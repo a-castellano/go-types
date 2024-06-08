@@ -6,6 +6,4 @@ The aim is this repo is save time and repeated code unifying them in one only so
 
 # Available Types
 
-## Rabbitmq
-
-
+* [rabbitmq](/rabbitmq): Rabbitmq config management and types for send messages using Rabbitmq
