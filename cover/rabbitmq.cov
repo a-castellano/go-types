@@ -1,0 +1,6 @@
+mode: count
+github.com/a-castellano/go-types/rabbitmq/rabbitmq.go:19.51,28.24 5 6
+github.com/a-castellano/go-types/rabbitmq/rabbitmq.go:28.24,30.3 1 1
+github.com/a-castellano/go-types/rabbitmq/rabbitmq.go:30.8,31.47 1 5
+github.com/a-castellano/go-types/rabbitmq/rabbitmq.go:31.47,33.4 1 3
+github.com/a-castellano/go-types/rabbitmq/rabbitmq.go:37.2,42.20 3 2

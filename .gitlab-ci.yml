@@ -3,6 +3,45 @@ image: registry.windmaker.net:5005/a-castellano/limani/base_golang_1_22:20240604
 stages:
     - unit_tests
 
+race_detector:
+  stage: unit_tests
+  before_script:
+    - export CC=/usr/bin/clang
+    - export GOPATH="$(pwd)/go"
+    - mkdir -p "$(pwd)/go"
+    - go env -w GOPATH="$(pwd)/go"
+    - mkdir -p $GOPATH/src/github.com/a-castellano
+    - ln -s ${CI_PROJECT_DIR} $GOPATH/src/github.com/a-castellano/go-types
+    - cd $GOPATH/src/github.com/a-castellano/go-types
+  script:
+    - make race
+
+memory_sanitizer:
+  stage: unit_tests
+  before_script:
+    - export CC=/usr/bin/clang
+    - export GOPATH="$(pwd)/go"
+    - mkdir -p "$(pwd)/go"
+    - go env -w GOPATH="$(pwd)/go"
+    - mkdir -p $GOPATH/src/github.com/a-castellano
+    - ln -s ${CI_PROJECT_DIR} $GOPATH/src/github.com/a-castellano/go-types
+    - cd $GOPATH/src/github.com/a-castellano/go-types
+  script:
+    - make msan
+
+lint_code:
+  stage: unit_tests
+  before_script:
+    - export CC=/usr/bin/clang
+    - export GOPATH="$(pwd)/go"
+    - mkdir -p "$(pwd)/go"
+    - go env -w GOPATH="$(pwd)/go"
+    - mkdir -p $GOPATH/src/github.com/a-castellano
+    - ln -s ${CI_PROJECT_DIR} $GOPATH/src/github.com/a-castellano/go-types
+    - cd $GOPATH/src/github.com/a-castellano/go-types
+  script:
+    - make lint
+
 rabbitmq_unit_tests:
   stage: unit_tests
   only:
