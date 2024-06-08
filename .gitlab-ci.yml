@@ -81,8 +81,8 @@ coverage:
     - mkdir -p "$(pwd)/go"
     - go env -w GOPATH="$(pwd)/go"
     - mkdir -p $GOPATH/src/github.com/a-castellano
-    - ln -s ${CI_PROJECT_DIR} $GOPATH/src/github.com/a-castellano/music-manager-metal-archives-wrapper
-    - cd $GOPATH/src/github.com/a-castellano/music-manager-metal-archives-wrapper
+    - ln -s ${CI_PROJECT_DIR} $GOPATH/src/github.com/a-castellano/go-types
+    - cd $GOPATH/src/github.com/a-castellano/go-types
   script:
     - make coverage
   coverage: /total:\s+.+\s(\d+\.\d+?)%$/
@@ -103,8 +103,8 @@ code_coverage_report:
     - mkdir -p "$(pwd)/go"
     - go env -w GOPATH="$(pwd)/go"
     - mkdir -p $GOPATH/src/github.com/a-castellano
-    - ln -s ${CI_PROJECT_DIR} $GOPATH/src/github.com/a-castellano/music-manager-metal-archives-wrapper
-    - cd $GOPATH/src/github.com/a-castellano/music-manager-metal-archives-wrapper
+    - ln -s ${CI_PROJECT_DIR} $GOPATH/src/github.com/a-castellano/go-types
+    - cd $GOPATH/src/github.com/a-castellano/go-types
   script:
     - make coverhtml
   only:
@@ -122,7 +122,7 @@ scan:
   stage: scan
   image: daedalusproject/base_sonar_scanner
   script:
-  - sonar-scanner -Dsonar.projectKey=metal-archives-wrapper -Dsonar.sources=. -Dsonar.host.url=https://sonarqube.windmaker.net -Dsonar.login=${SONAR_LOGIN} -Dsonar.exclusions="*/*_test.go" -Dsonar.go.coverage.reportPaths="cover/coverage.report"
+  - sonar-scanner -Dsonar.projectKey=go-types -Dsonar.sources=. -Dsonar.host.url=https://sonarqube.windmaker.net -Dsonar.login=${SONAR_LOGIN} -Dsonar.exclusions="*/*_test.go" -Dsonar.go.coverage.reportPaths="cover/coverage.report"
   dependencies:
   - coverage
 
