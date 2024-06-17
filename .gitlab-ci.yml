@@ -1,4 +1,4 @@
-image: registry.windmaker.net:5005/a-castellano/limani/base_golang_1_22:202406041901
+image: registry.windmaker.net:5005/a-castellano/limani/base_golang_1_22:202406162120
 
 stages:
     - lint
@@ -73,7 +73,7 @@ coverage:
     - develop
     - master
   services:
-    - name: registry.windmaker.net:5005/a-castellano/limani/base_rabbitmq_server:202406041901
+    - name: registry.windmaker.net:5005/a-castellano/limani/base_rabbitmq_server:202406162120
       alias: rabbitmq
   before_script:
     - export CC=/usr/bin/clang
@@ -95,7 +95,7 @@ coverage:
 code_coverage_report:
   stage: report
   services:
-    - name: registry.windmaker.net:5005/a-castellano/limani/base_rabbitmq_server:202406041901
+    - name: registry.windmaker.net:5005/a-castellano/limani/base_rabbitmq_server:202406162120
       alias: rabbitmq
   before_script:
     - export CC=/usr/bin/clang
@@ -132,7 +132,7 @@ scan:
 
 pages:
   stage: deploy
-  image: registry.windmaker.net:5005/a-castellano/limani/base:202406041901
+  image: registry.windmaker.net:5005/a-castellano/limani/base:202406162120
   script:
     - cp coverage.html public/
   artifacts:
