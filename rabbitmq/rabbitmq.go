@@ -5,6 +5,8 @@ import (
 	"errors"
 	"os"
 	"strconv"
+
+	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 // Config is a type that defines required data for connecting to RabbitMQ server
@@ -45,50 +47,53 @@ func NewConfig() (*Config, error) {
 
 // SendMessage sends a message through queueName
 func (rabbitmqConfig Config) SendMessage(queueName string, message []byte) error {
-
-	connectionString := "amqp://" + rabbitmqConfig.User + ":" + rabbitmqConfig.Password + "@" + rabbitmqConfig.Host + ":" + strconv.Itoa(rabbitmqConfig.Port) + "/"
+	connectionString := "amqp://" + rabbitmqConfig.user + ":" + rabbitmqConfig.password + "@" + rabbitmqConfig.host + ":" + strconv.Itoa(rabbitmqConfig.port) + "/"
 
 	conn, errDial := amqp.Dial(connectionString)
-	defer conn.Close()
-
 	if errDial != nil {
 		return errDial
 	}
-
-	channel, errChannel := conn.Channel()
-	defer channel.Close()
-	if errChannel != nil {
-		return errChannel
-	}
-
-	queue, errQueue := channel.QueueDeclare(
-		queueName, // name
-		true,      // durable
-		false,     // delete when unused
-		false,     // exclusive
-		false,     // no-wait
-		nil,       // arguments
-	)
-
-	if errQueue != nil {
-		return errQueue
-	}
-
-	// send message
-
-	err := channel.Publish(
-		"",         // exchange
-		queue.Name, // routing key
-		false,      // mandatory
-		false,
-		amqp.Publishing{
-			DeliveryMode: amqp.Persistent,
-			ContentType:  "text/plain",
-			Body:         encodedNotification,
-		})
-
-	if err != nil {
-		return err
-	}
+	defer conn.Close()
+	//
+	// channel, errChannel := conn.Channel()
+	// defer channel.Close()
+	//
+	//	if errChannel != nil {
+	//		return errChannel
+	//	}
+	//
+	// queue, errQueue := channel.QueueDeclare(
+	//
+	//	queueName, // name
+	//	true,      // durable
+	//	false,     // delete when unused
+	//	false,     // exclusive
+	//	false,     // no-wait
+	//	nil,       // arguments
+	//
+	// )
+	//
+	//	if errQueue != nil {
+	//		return errQueue
+	//	}
+	//
+	// // send message
+	//
+	// err := channel.Publish(
+	//
+	//	"",         // exchange
+	//	queue.Name, // routing key
+	//	false,      // mandatory
+	//	false,
+	//	amqp.Publishing{
+	//		DeliveryMode: amqp.Persistent,
+	//		ContentType:  "text/plain",
+	//		Body:         message,
+	//	})
+	//
+	//	if err != nil {
+	//		return err
+	//	}
+	//
 	return nil
 }
