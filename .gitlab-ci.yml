@@ -55,6 +55,8 @@ rabbitmq_unit_tests:
     - master
     - /^.*rabbitmq.*$/
   before_script:
+    - apt-get update
+    - apt-get install openssl -y
     - export CC=/usr/bin/clang
     - export GOPATH="$(pwd)/go"
     - mkdir -p "$(pwd)/go"
@@ -74,8 +76,6 @@ rabbitmq_integration_tests:
     - master
     - /^.*rabbitmq.*$/
   before_script:
-    - apt-get update
-    - apt-get install openssl -y
     - export CC=/usr/bin/clang
     - export GOPATH="$(pwd)/go"
     - mkdir -p "$(pwd)/go"
