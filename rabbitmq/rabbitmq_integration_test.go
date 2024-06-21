@@ -26,3 +26,23 @@ func TestRabbitmqFailedConnection(t *testing.T) {
 		t.Errorf("TestRabbitmqFailedConnection should fail.")
 	}
 }
+
+func TestRabbitmqSendMessage(t *testing.T) {
+
+	defer teardown()
+
+	os.Setenv("RABBITMQ_HOST", "rabbitmq")
+	os.Setenv("RABBITMQ_PORT", "5672")
+	os.Setenv("RABBITMQ_USER", "guest")
+	os.Setenv("RABBITMQ_PASSWORD", "guest")
+
+	config, _ := NewConfig()
+	queueName := "test"
+	testString := []byte("This is a Test")
+
+	sendError := config.SendMessage(queueName, testString)
+
+	if sendError != nil {
+		t.Errorf("TestRabbitmqSendMessage shouldn't fail. Error was '%s'.", sendError.Error())
+	}
+}

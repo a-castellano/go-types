@@ -54,46 +54,47 @@ func (rabbitmqConfig Config) SendMessage(queueName string, message []byte) error
 		return errDial
 	}
 	defer conn.Close()
-	//
-	// channel, errChannel := conn.Channel()
-	// defer channel.Close()
-	//
-	//	if errChannel != nil {
-	//		return errChannel
-	//	}
-	//
-	// queue, errQueue := channel.QueueDeclare(
-	//
-	//	queueName, // name
-	//	true,      // durable
-	//	false,     // delete when unused
-	//	false,     // exclusive
-	//	false,     // no-wait
-	//	nil,       // arguments
-	//
-	// )
-	//
-	//	if errQueue != nil {
-	//		return errQueue
-	//	}
-	//
-	// // send message
-	//
-	// err := channel.Publish(
-	//
-	//	"",         // exchange
-	//	queue.Name, // routing key
-	//	false,      // mandatory
-	//	false,
-	//	amqp.Publishing{
-	//		DeliveryMode: amqp.Persistent,
-	//		ContentType:  "text/plain",
-	//		Body:         message,
-	//	})
-	//
-	//	if err != nil {
-	//		return err
-	//	}
-	//
+
+	channel, errChannel := conn.Channel()
+
+	if errChannel != nil {
+		return errChannel
+	}
+
+	defer channel.Close()
+
+	queue, errQueue := channel.QueueDeclare(
+
+		queueName, // name
+		true,      // durable
+		false,     // delete when unused
+		false,     // exclusive
+		false,     // no-wait
+		nil,       // arguments
+
+	)
+
+	if errQueue != nil {
+		return errQueue
+	}
+
+	// send message
+
+	err := channel.Publish(
+
+		"",         // exchange
+		queue.Name, // routing key
+		false,      // mandatory
+		false,
+		amqp.Publishing{
+			DeliveryMode: amqp.Persistent,
+			ContentType:  "text/plain",
+			Body:         message,
+		})
+
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
