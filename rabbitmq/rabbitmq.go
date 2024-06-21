@@ -11,10 +11,11 @@ import (
 
 // Config is a type that defines required data for connecting to RabbitMQ server
 type Config struct {
-	host     string
-	port     int
-	user     string
-	password string
+	host             string
+	port             int
+	user             string
+	password         string
+	connectionString string
 }
 
 // NewConfig is the function that validates and returns Config instance
@@ -42,14 +43,14 @@ func NewConfig() (*Config, error) {
 		return config, errors.New("RabbitMQ portvalue must be between 1 and 65535")
 	}
 
+	config.connectionString = "amqp://" + config.user + ":" + config.password + "@" + config.host + ":" + strconv.Itoa(config.port) + "/"
 	return config, nil
 }
 
 // SendMessage sends a message through queueName
 func (rabbitmqConfig Config) SendMessage(queueName string, message []byte) error {
-	connectionString := "amqp://" + rabbitmqConfig.user + ":" + rabbitmqConfig.password + "@" + rabbitmqConfig.host + ":" + strconv.Itoa(rabbitmqConfig.port) + "/"
 
-	conn, errDial := amqp.Dial(connectionString)
+	conn, errDial := amqp.Dial(rabbitmqConfig.connectionString)
 	if errDial != nil {
 		return errDial
 	}
@@ -97,4 +98,62 @@ func (rabbitmqConfig Config) SendMessage(queueName string, message []byte) error
 	}
 
 	return nil
+}
+
+func (rabbitmqConfig Config) ReceiveMessage(queueName string) (error, []byte) {
+
+	emptyMessage := make([]byte, 0)
+
+	conn, errDial := amqp.Dial(rabbitmqConfig.connectionString)
+
+	if errDial != nil {
+		return errDial, emptyMessage
+	}
+
+	defer conn.Close()
+
+	channel, errChannel := conn.Channel()
+
+	if errChannel != nil {
+		return errChannel, emptyMessage
+	}
+
+	_, errQueue := channel.QueueDeclare(
+		queueName,
+		true,  // Durable
+		false, // DeleteWhenUnused
+		false, // Exclusive
+		false, // NoWait
+		nil,   // arguments
+	)
+
+	if errQueue != nil {
+		return errQueue, emptyMessage
+	}
+
+	errChannelQos := channel.Qos(
+		1,     // prefetch count
+		0,     // prefetch size
+		false, // global
+	)
+
+	if errChannelQos != nil {
+		return errChannelQos, emptyMessage
+	}
+
+	message, errMessageReceived := channel.Consume(
+		queueName,
+		"",    // consumer
+		false, // auto-ack
+		false, // exclusive
+		false, // no-local
+		false, // no-wait
+		nil,   // args
+	)
+
+	if errMessageReceived != nil {
+		return errMessageReceived, emptyMessage
+	}
+
+	return nil, message
 }
