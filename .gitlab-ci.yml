@@ -75,6 +75,9 @@ rabbitmq_integration_tests:
     - develop
     - master
     - /^.*rabbitmq.*$/
+  services:
+    - name: registry.windmaker.net:5005/a-castellano/limani/base_rabbitmq_server:202406192043
+      alias: rabbitmq
   before_script:
     - export CC=/usr/bin/clang
     - export GOPATH="$(pwd)/go"
