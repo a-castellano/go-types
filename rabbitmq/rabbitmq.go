@@ -148,7 +148,7 @@ func (rabbitmqConfig Config) ReceiveMessages(ctx context.Context, queueName stri
 	messagesToReceive, errMessageReceived := channel.Consume(
 		queueName,
 		"",    // consumer
-		false, // auto-ack
+		true,  // auto-ack
 		false, // exclusive
 		false, // no-local
 		false, // no-wait
@@ -163,7 +163,6 @@ func (rabbitmqConfig Config) ReceiveMessages(ctx context.Context, queueName stri
 	for receivedMessage := range messagesToReceive {
 
 		messages <- receivedMessage.Body
-		receivedMessage.Ack(false)
 		select {
 		case <-ctx.Done(): //exit function
 			errors <- nil
