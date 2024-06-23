@@ -158,11 +158,13 @@ pages:
   stage: deploy
   image: registry.windmaker.net:5005/a-castellano/limani/base:202406192043
   script:
+    - mkdir public
     - cp coverage.html public/
   artifacts:
     paths:
     - public
   only:
     - master
+    - develop
   dependencies:
     - code_coverage_report
