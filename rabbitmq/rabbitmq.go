@@ -2,6 +2,7 @@ package rabbitmq
 
 import (
 	"cmp"
+	"context"
 	"errors"
 	"os"
 	"strconv"
@@ -100,14 +101,14 @@ func (rabbitmqConfig Config) SendMessage(queueName string, message []byte) error
 	return nil
 }
 
-func (rabbitmqConfig Config) ReceiveMessage(queueName string) (error, []byte) {
-
-	emptyMessage := make([]byte, 0)
+// ReceiveMessages stores messages in channel until it is closed using context
+func (rabbitmqConfig Config) ReceiveMessages(ctx context.Context, queueName string, messages chan<- []byte, errors chan<- error) {
 
 	conn, errDial := amqp.Dial(rabbitmqConfig.connectionString)
 
 	if errDial != nil {
-		return errDial, emptyMessage
+		errors <- errDial
+		return
 	}
 
 	defer conn.Close()
@@ -115,7 +116,8 @@ func (rabbitmqConfig Config) ReceiveMessage(queueName string) (error, []byte) {
 	channel, errChannel := conn.Channel()
 
 	if errChannel != nil {
-		return errChannel, emptyMessage
+		errors <- errChannel
+		return
 	}
 
 	_, errQueue := channel.QueueDeclare(
@@ -128,7 +130,8 @@ func (rabbitmqConfig Config) ReceiveMessage(queueName string) (error, []byte) {
 	)
 
 	if errQueue != nil {
-		return errQueue, emptyMessage
+		errors <- errQueue
+		return
 	}
 
 	errChannelQos := channel.Qos(
@@ -138,10 +141,11 @@ func (rabbitmqConfig Config) ReceiveMessage(queueName string) (error, []byte) {
 	)
 
 	if errChannelQos != nil {
-		return errChannelQos, emptyMessage
+		errors <- errChannelQos
+		return
 	}
 
-	message, errMessageReceived := channel.Consume(
+	messagesToReceive, errMessageReceived := channel.Consume(
 		queueName,
 		"",    // consumer
 		false, // auto-ack
@@ -152,8 +156,22 @@ func (rabbitmqConfig Config) ReceiveMessage(queueName string) (error, []byte) {
 	)
 
 	if errMessageReceived != nil {
-		return errMessageReceived, emptyMessage
+		errors <- errMessageReceived
+		return
 	}
 
-	return nil, message
+	for receivedMessage := range messagesToReceive {
+
+		messages <- receivedMessage.Body
+		receivedMessage.Ack(false)
+		select {
+		case <-ctx.Done(): //exit function
+			errors <- nil
+			return
+		default:
+			continue
+		}
+	}
+
+	errors <- nil
 }
