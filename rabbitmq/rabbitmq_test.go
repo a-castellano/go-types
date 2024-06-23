@@ -1,4 +1,4 @@
-//go:build integration_tests || unit_tests || rabbitmq_tests
+//go:build integration_tests || unit_tests || rabbitmq_tests || rabbitmq_unit_tests
 
 package rabbitmq
 
@@ -7,7 +7,16 @@ import (
 	"testing"
 )
 
+func teardown() {
+	os.Unsetenv("RABBITMQ_HOST")
+	os.Unsetenv("RABBITMQ_PORT")
+	os.Unsetenv("RABBITMQ_USER")
+	os.Unsetenv("RABBITMQ_PASSWORD")
+}
+
 func TestRabbitmqConfigWithoutEnvVariables(t *testing.T) {
+
+	defer teardown()
 
 	config, err := NewConfig()
 
@@ -31,6 +40,8 @@ func TestRabbitmqConfigWithoutEnvVariables(t *testing.T) {
 
 func TestRabbitmqConfigWithStringAsPortValue(t *testing.T) {
 
+	defer teardown()
+
 	os.Setenv("RABBITMQ_PORT", "invalidport")
 
 	_, err := NewConfig()
@@ -41,6 +52,8 @@ func TestRabbitmqConfigWithStringAsPortValue(t *testing.T) {
 }
 
 func TestRabbitmqConfigWithInvalidPortValue1(t *testing.T) {
+
+	defer teardown()
 
 	os.Setenv("RABBITMQ_PORT", "65536")
 
@@ -53,6 +66,8 @@ func TestRabbitmqConfigWithInvalidPortValue1(t *testing.T) {
 
 func TestRabbitmqConfigWithInvalidPortValue2(t *testing.T) {
 
+	defer teardown()
+
 	os.Setenv("RABBITMQ_PORT", "0")
 
 	_, err := NewConfig()
@@ -64,6 +79,8 @@ func TestRabbitmqConfigWithInvalidPortValue2(t *testing.T) {
 
 func TestRabbitmqConfigWithInvalidPortValue3(t *testing.T) {
 
+	defer teardown()
+
 	os.Setenv("RABBITMQ_PORT", "-1")
 
 	_, err := NewConfig()
@@ -74,6 +91,8 @@ func TestRabbitmqConfigWithInvalidPortValue3(t *testing.T) {
 }
 
 func TestRabbitmqConfigWithEnvVariables(t *testing.T) {
+
+	defer teardown()
 
 	os.Setenv("RABBITMQ_HOST", "127.0.0.1")
 	os.Setenv("RABBITMQ_PORT", "1123")
@@ -96,6 +115,9 @@ func TestRabbitmqConfigWithEnvVariables(t *testing.T) {
 		}
 		if config.password != "password" {
 			t.Errorf("Rabbitmq config.password should be \"password\" but was \"%s\".", config.password)
+		}
+		if config.connectionString != "amqp://user:password@127.0.0.1:1123/" {
+			t.Errorf("Rabbitmq config.connectionString should be \"amqp://user:password@127.0.0.1:1123/\" but was \"%s\".", config.connectionString)
 		}
 	}
 }

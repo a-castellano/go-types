@@ -19,6 +19,9 @@ test_integration: ## Run integration tests
 test_rabbitmq: ## Run rabbitmq realted tests
 	@go test --tags=rabbitmq_tests -short ./...
 
+test_rabbitmq_unit: ## Run rabbitmq realted tests
+	@go test --tags=rabbitmq_unit_tests -short ./...
+
 race: ## Run data race detector
 	@go test -race -short ${PKG_LIST}
 
