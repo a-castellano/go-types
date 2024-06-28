@@ -27,7 +27,7 @@ func TestRabbitmqConfigWithoutEnvVariables(t *testing.T) {
 			t.Errorf("Rabbitmq config.host should be \"localhost\" but was \"%s\".", config.host)
 		}
 		if config.port != 5672 {
-			t.Errorf("Rabbitmq config.host should be 5672 but was %d.", config.port)
+			t.Errorf("Rabbitmq config.port should be 5672 but was %d.", config.port)
 		}
 		if config.user != "guest" {
 			t.Errorf("Rabbitmq config.user should be \"guest\" but was \"%s\".", config.user)

@@ -1,6 +1,6 @@
 # rabbitmq type
 
-This type manages rabbitmq connections and manage sending
+This type manages rabbitmq connections and message sending and receiving
 
 ## Required variables
 

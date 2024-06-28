@@ -3,7 +3,7 @@ PKG := "github.com/a-castellano/$(PROJECT_NAME)"
 PKG_LIST := $(shell go list ${PKG}/... | grep -v /vendor/)
 GO_FILES := $(shell find . -name '*.go' | grep -v /vendor/ | grep -v _test.go)
 
-.PHONY: all build clean test test_integration test_rabbitmq coverage coverhtml lint
+.PHONY: all build clean test test_integration test_rabbitmq coverage coverhtml lint race msan
 
 all: build
 
@@ -22,11 +22,17 @@ test_rabbitmq: ## Run rabbitmq realted tests
 test_rabbitmq_unit: ## Run rabbitmq realted tests
 	@go test --tags=rabbitmq_unit_tests -short ./...
 
+test_redis: ## Run redis realted tests
+	@go test --tags=redis_tests -short ./...
+
+test_redis_unit: ## Run redis realted tests
+	@go test --tags=redis_unit_tests -short ./...
+
 race: ## Run data race detector
-	@go test -race -short ${PKG_LIST}
+	@go test -race -short ./...
 
 msan: ## Run memory sanitizer
-	@go test -msan -short ${PKG_LIST}
+	@go test -msan -short ./...
 
 coverage: ## Generate global code coverage report
 	./scripts/coverage.sh;

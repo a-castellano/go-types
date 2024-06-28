@@ -3,7 +3,6 @@ image: registry.windmaker.net:5005/a-castellano/limani/base_golang_1_22:20240619
 stages:
     - lint
     - unit_tests
-    - integration_tests
     - coverage
     - report
     - scan
@@ -35,6 +34,7 @@ race_detector:
   script:
     - make race
 
+
 memory_sanitizer:
   stage: unit_tests
   before_script:
@@ -55,8 +55,6 @@ rabbitmq_unit_tests:
     - master
     - /^.*rabbitmq.*$/
   before_script:
-    - apt-get update
-    - apt-get install openssl -y
     - export CC=/usr/bin/clang
     - export GOPATH="$(pwd)/go"
     - mkdir -p "$(pwd)/go"
@@ -65,19 +63,15 @@ rabbitmq_unit_tests:
     - ln -s ${CI_PROJECT_DIR} $GOPATH/src/github.com/a-castellano/go-types
     - cd $GOPATH/src/github.com/a-castellano/go-types
   script:
-    - echo $GOPATH
-    - pwd
     - make test_rabbitmq_unit
 
-rabbitmq_integration_tests:
-  stage: integration_tests
+
+redis_unit_tests:
+  stage: unit_tests
   only:
     - develop
     - master
-    - /^.*rabbitmq.*$/
-  services:
-    - name: registry.windmaker.net:5005/a-castellano/limani/base_rabbitmq_server:202406192043
-      alias: rabbitmq
+    - /^.*redis.*$/
   before_script:
     - export CC=/usr/bin/clang
     - export GOPATH="$(pwd)/go"
@@ -87,18 +81,14 @@ rabbitmq_integration_tests:
     - ln -s ${CI_PROJECT_DIR} $GOPATH/src/github.com/a-castellano/go-types
     - cd $GOPATH/src/github.com/a-castellano/go-types
   script:
-    - echo $GOPATH
-    - pwd
-    - make test_rabbitmq
+    - make test_redis_unit
+
 
 coverage:
   stage: coverage
   only:
     - develop
     - master
-  services:
-    - name: registry.windmaker.net:5005/a-castellano/limani/base_rabbitmq_server:202406192043
-      alias: rabbitmq
   before_script:
     - export CC=/usr/bin/clang
     - export GOPATH="$(pwd)/go"
@@ -118,9 +108,6 @@ coverage:
 
 code_coverage_report:
   stage: report
-  services:
-    - name: registry.windmaker.net:5005/a-castellano/limani/base_rabbitmq_server:202406192043
-      alias: rabbitmq
   before_script:
     - export CC=/usr/bin/clang
     - export GOPATH="$(pwd)/go"
