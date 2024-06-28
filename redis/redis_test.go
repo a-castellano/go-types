@@ -60,17 +60,26 @@ func teardown() {
 
 	if currentHostDefined {
 		os.Setenv("REDIS_HOST", currentHost)
+	} else {
+		os.Unsetenv("REDIS_HOST")
 	}
 
 	if currentPortDefined {
 		os.Setenv("REDIS_PORT", currentPort)
+	} else {
+		os.Unsetenv("REDIS_PORT")
 	}
 
 	if currentDatabaseDefined {
 		os.Setenv("REDIS_DATABASE", currentDatabase)
+	} else {
+		os.Unsetenv("REDIS_DATABASE")
 	}
+
 	if currentPasswordDefined {
 		os.Setenv("REDIS_PASSWORD", currentPassword)
+	} else {
+		os.Unsetenv("REDIS_PASSWORD")
 	}
 
 }
@@ -114,7 +123,49 @@ func TestRedisConfigWithInvalidPort(t *testing.T) {
 
 }
 
+func TestRedisConfigWithNeativePort(t *testing.T) {
+
+	setUp()
+	defer teardown()
+
+	os.Setenv("REDIS_PORT", "-1")
+	_, err := NewConfig()
+
+	if err == nil {
+		t.Errorf("NewConfig method with \"REDIS_PORT\" env variable containing invalid value should fail.")
+	}
+
+}
+
+func TestRedisConfigWithPortTooBig(t *testing.T) {
+
+	setUp()
+	defer teardown()
+
+	os.Setenv("REDIS_PORT", "100000")
+	_, err := NewConfig()
+
+	if err == nil {
+		t.Errorf("NewConfig method with \"REDIS_PORT\" env variable containing invalid value should fail.")
+	}
+
+}
+
 func TestRedisConfigWithInvalidDatabase(t *testing.T) {
+
+	setUp()
+	defer teardown()
+
+	os.Setenv("REDIS_DATABASE", "invalid")
+	_, err := NewConfig()
+
+	if err == nil {
+		t.Errorf("NewConfig method with \"REDIS_DATABASE\" env variable containing invalid value should fail.")
+	}
+
+}
+
+func TestRedisConfigWithNeativeDatabase(t *testing.T) {
 
 	setUp()
 	defer teardown()
