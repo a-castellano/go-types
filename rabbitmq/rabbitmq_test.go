@@ -7,15 +7,86 @@ import (
 	"testing"
 )
 
-func teardown() {
+var currentHost string
+var currentHostDefined bool
+
+var currentPort string
+var currentPortDefined bool
+
+var currentUser string
+var currentUserDefined bool
+
+var currentPassword string
+var currentPasswordDefined bool
+
+func setUp() {
+
+	if envHost, found := os.LookupEnv("RABBITMQ_HOST"); found {
+		currentHost = envHost
+		currentHostDefined = true
+	} else {
+		currentHostDefined = false
+	}
+
+	if envPort, found := os.LookupEnv("RABBITMQ_PORT"); found {
+		currentPort = envPort
+		currentPortDefined = true
+	} else {
+		currentPortDefined = false
+	}
+
+	if envUser, found := os.LookupEnv("RABBITMQ_USER"); found {
+		currentUser = envUser
+		currentUserDefined = true
+	} else {
+		currentUserDefined = false
+	}
+
+	if envPassword, found := os.LookupEnv("RABBITMQ_PASSWORD"); found {
+		currentPassword = envPassword
+		currentPasswordDefined = true
+	} else {
+		currentPasswordDefined = false
+	}
+
 	os.Unsetenv("RABBITMQ_HOST")
 	os.Unsetenv("RABBITMQ_PORT")
-	os.Unsetenv("RABBITMQ_USER")
+	os.Unsetenv("RABBITMQ_DATABASE")
 	os.Unsetenv("RABBITMQ_PASSWORD")
+
+}
+
+func teardown() {
+
+	if currentHostDefined {
+		os.Setenv("RABBITMQ_HOST", currentHost)
+	} else {
+		os.Unsetenv("RABBITMQ_HOST")
+	}
+
+	if currentPortDefined {
+		os.Setenv("RABBITMQ_PORT", currentPort)
+	} else {
+		os.Unsetenv("RABBITMQ_PORT")
+	}
+
+	if currentUserDefined {
+		os.Setenv("RABBITMQ_USER", currentUser)
+	} else {
+		os.Unsetenv("RABBITMQ_USER")
+	}
+
+	if currentPasswordDefined {
+		os.Setenv("RABBITMQ_PASSWORD", currentPassword)
+	} else {
+		os.Unsetenv("RABBITMQ_PASSWORD")
+	}
+
 }
 
 func TestRabbitmqConfigWithoutEnvVariables(t *testing.T) {
 
+	setUp()
 	defer teardown()
 
 	config, err := NewConfig()
@@ -40,6 +111,7 @@ func TestRabbitmqConfigWithoutEnvVariables(t *testing.T) {
 
 func TestRabbitmqConfigWithStringAsPortValue(t *testing.T) {
 
+	setUp()
 	defer teardown()
 
 	os.Setenv("RABBITMQ_PORT", "invalidport")
@@ -53,6 +125,7 @@ func TestRabbitmqConfigWithStringAsPortValue(t *testing.T) {
 
 func TestRabbitmqConfigWithInvalidPortValue1(t *testing.T) {
 
+	setUp()
 	defer teardown()
 
 	os.Setenv("RABBITMQ_PORT", "65536")
@@ -66,6 +139,7 @@ func TestRabbitmqConfigWithInvalidPortValue1(t *testing.T) {
 
 func TestRabbitmqConfigWithInvalidPortValue2(t *testing.T) {
 
+	setUp()
 	defer teardown()
 
 	os.Setenv("RABBITMQ_PORT", "0")
@@ -79,6 +153,7 @@ func TestRabbitmqConfigWithInvalidPortValue2(t *testing.T) {
 
 func TestRabbitmqConfigWithInvalidPortValue3(t *testing.T) {
 
+	setUp()
 	defer teardown()
 
 	os.Setenv("RABBITMQ_PORT", "-1")
@@ -92,6 +167,7 @@ func TestRabbitmqConfigWithInvalidPortValue3(t *testing.T) {
 
 func TestRabbitmqConfigWithEnvVariables(t *testing.T) {
 
+	setUp()
 	defer teardown()
 
 	os.Setenv("RABBITMQ_HOST", "127.0.0.1")
