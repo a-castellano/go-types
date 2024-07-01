@@ -192,8 +192,8 @@ func TestRabbitmqConfigWithEnvVariables(t *testing.T) {
 		if config.password != "password" {
 			t.Errorf("Rabbitmq config.password should be \"password\" but was \"%s\".", config.password)
 		}
-		if config.connectionString != "amqp://user:password@127.0.0.1:1123/" {
-			t.Errorf("Rabbitmq config.connectionString should be \"amqp://user:password@127.0.0.1:1123/\" but was \"%s\".", config.connectionString)
+		if config.ConnectionString != "amqp://user:password@127.0.0.1:1123/" {
+			t.Errorf("Rabbitmq config.ConnectionString should be \"amqp://user:password@127.0.0.1:1123/\" but was \"%s\".", config.ConnectionString)
 		}
 	}
 }
