@@ -13,7 +13,7 @@ type Config struct {
 	port             int
 	user             string
 	password         string
-	connectionString string
+	ConnectionString string
 }
 
 // NewConfig is the function that validates and returns Config instance
@@ -41,6 +41,6 @@ func NewConfig() (*Config, error) {
 		return config, errors.New("RabbitMQ portvalue must be between 1 and 65535")
 	}
 
-	config.connectionString = "amqp://" + config.user + ":" + config.password + "@" + config.host + ":" + strconv.Itoa(config.port) + "/"
+	config.ConnectionString = "amqp://" + config.user + ":" + config.password + "@" + config.host + ":" + strconv.Itoa(config.port) + "/"
 	return config, nil
 }

@@ -95,16 +95,16 @@ func TestRedisConfigWithoutEnvVariables(t *testing.T) {
 		t.Errorf("NewConfig method without any env varible suited shouldn't fail, error was '%s'.", err.Error())
 	} else {
 
-		if config.host != "localhost" {
-			t.Errorf("redis config.host should be \"localhost\" but was \"%s\".", config.host)
+		if config.Host != "localhost" {
+			t.Errorf("redis config.Host should be \"localhost\" but was \"%s\".", config.Host)
 		}
 
-		if config.port != 6379 {
-			t.Errorf("redis config.host should be 6379 but was %d.", config.port)
+		if config.Port != 6379 {
+			t.Errorf("redis config.Host should be 6379 but was %d.", config.Port)
 		}
 
-		if config.database != 0 {
-			t.Errorf("redis config.database should be 0 but was \"%d\".", config.database)
+		if config.Database != 0 {
+			t.Errorf("redis config.Database should be 0 but was \"%d\".", config.Database)
 		}
 	}
 }
@@ -194,15 +194,15 @@ func TestRedisConfigWithValidVariables(t *testing.T) {
 		t.Errorf("NewConfig method with valid config shouldn't fail, error was '%s'.", err.Error())
 	} else {
 
-		if config.host != "127.0.0.1" {
-			t.Errorf("redis config.host should be \"127.0.0.1\" but was \"%s\".", config.host)
+		if config.Host != "127.0.0.1" {
+			t.Errorf("redis config.Host should be \"127.0.0.1\" but was \"%s\".", config.Host)
 		}
-		if config.port != 1234 {
-			t.Errorf("redis config.port should be 1234 but was %d.", config.port)
+		if config.Port != 1234 {
+			t.Errorf("redis config.Port should be 1234 but was %d.", config.Port)
 		}
 
-		if config.database != 2 {
-			t.Errorf("redis config.database should be22 but was \"%d\".", config.database)
+		if config.Database != 2 {
+			t.Errorf("redis config.Database should be22 but was \"%d\".", config.Database)
 		}
 	}
 }
