@@ -19,67 +19,73 @@ var currentUserDefined bool
 var currentPassword string
 var currentPasswordDefined bool
 
+var rabbitmq_host_env_variable string = "RABBITMQ_HOST"
+var rabbitmq_port_env_variable string = "RABBITMQ_PORT"
+var rabbitmq_user_env_variable string = "RABBITMQ_USER"
+var rabbitmq_database_env_variable string = "RABBITMQ_DATABASE"
+var rabbitmq_password_env_variable string = "RABBITMQ_PASSWORD"
+
 func setUp() {
 
-	if envHost, found := os.LookupEnv("RABBITMQ_HOST"); found {
+	if envHost, found := os.LookupEnv(rabbitmq_host_env_variable); found {
 		currentHost = envHost
 		currentHostDefined = true
 	} else {
 		currentHostDefined = false
 	}
 
-	if envPort, found := os.LookupEnv("RABBITMQ_PORT"); found {
+	if envPort, found := os.LookupEnv(rabbitmq_port_env_variable); found {
 		currentPort = envPort
 		currentPortDefined = true
 	} else {
 		currentPortDefined = false
 	}
 
-	if envUser, found := os.LookupEnv("RABBITMQ_USER"); found {
+	if envUser, found := os.LookupEnv(rabbitmq_user_env_variable); found {
 		currentUser = envUser
 		currentUserDefined = true
 	} else {
 		currentUserDefined = false
 	}
 
-	if envPassword, found := os.LookupEnv("RABBITMQ_PASSWORD"); found {
+	if envPassword, found := os.LookupEnv(rabbitmq_password_env_variable); found {
 		currentPassword = envPassword
 		currentPasswordDefined = true
 	} else {
 		currentPasswordDefined = false
 	}
 
-	os.Unsetenv("RABBITMQ_HOST")
-	os.Unsetenv("RABBITMQ_PORT")
-	os.Unsetenv("RABBITMQ_DATABASE")
-	os.Unsetenv("RABBITMQ_PASSWORD")
+	os.Unsetenv(rabbitmq_host_env_variable)
+	os.Unsetenv(rabbitmq_port_env_variable)
+	os.Unsetenv(rabbitmq_database_env_variable)
+	os.Unsetenv(rabbitmq_password_env_variable)
 
 }
 
 func teardown() {
 
 	if currentHostDefined {
-		os.Setenv("RABBITMQ_HOST", currentHost)
+		os.Setenv(rabbitmq_host_env_variable, currentHost)
 	} else {
-		os.Unsetenv("RABBITMQ_HOST")
+		os.Unsetenv(rabbitmq_host_env_variable)
 	}
 
 	if currentPortDefined {
-		os.Setenv("RABBITMQ_PORT", currentPort)
+		os.Setenv(rabbitmq_port_env_variable, currentPort)
 	} else {
-		os.Unsetenv("RABBITMQ_PORT")
+		os.Unsetenv(rabbitmq_port_env_variable)
 	}
 
 	if currentUserDefined {
-		os.Setenv("RABBITMQ_USER", currentUser)
+		os.Setenv(rabbitmq_user_env_variable, currentUser)
 	} else {
-		os.Unsetenv("RABBITMQ_USER")
+		os.Unsetenv(rabbitmq_user_env_variable)
 	}
 
 	if currentPasswordDefined {
-		os.Setenv("RABBITMQ_PASSWORD", currentPassword)
+		os.Setenv(rabbitmq_password_env_variable, currentPassword)
 	} else {
-		os.Unsetenv("RABBITMQ_PASSWORD")
+		os.Unsetenv(rabbitmq_password_env_variable)
 	}
 
 }
@@ -114,7 +120,7 @@ func TestRabbitmqConfigWithStringAsPortValue(t *testing.T) {
 	setUp()
 	defer teardown()
 
-	os.Setenv("RABBITMQ_PORT", "invalidport")
+	os.Setenv(rabbitmq_port_env_variable, "invalidport")
 
 	_, err := NewConfig()
 
@@ -128,7 +134,7 @@ func TestRabbitmqConfigWithInvalidPortValue1(t *testing.T) {
 	setUp()
 	defer teardown()
 
-	os.Setenv("RABBITMQ_PORT", "65536")
+	os.Setenv(rabbitmq_port_env_variable, "65536")
 
 	_, err := NewConfig()
 
@@ -142,7 +148,7 @@ func TestRabbitmqConfigWithInvalidPortValue2(t *testing.T) {
 	setUp()
 	defer teardown()
 
-	os.Setenv("RABBITMQ_PORT", "0")
+	os.Setenv(rabbitmq_port_env_variable, "0")
 
 	_, err := NewConfig()
 
@@ -156,7 +162,7 @@ func TestRabbitmqConfigWithInvalidPortValue3(t *testing.T) {
 	setUp()
 	defer teardown()
 
-	os.Setenv("RABBITMQ_PORT", "-1")
+	os.Setenv(rabbitmq_port_env_variable, "-1")
 
 	_, err := NewConfig()
 
@@ -170,10 +176,10 @@ func TestRabbitmqConfigWithEnvVariables(t *testing.T) {
 	setUp()
 	defer teardown()
 
-	os.Setenv("RABBITMQ_HOST", "127.0.0.1")
-	os.Setenv("RABBITMQ_PORT", "1123")
-	os.Setenv("RABBITMQ_USER", "user")
-	os.Setenv("RABBITMQ_PASSWORD", "password")
+	os.Setenv(rabbitmq_host_env_variable, "127.0.0.1")
+	os.Setenv(rabbitmq_port_env_variable, "1123")
+	os.Setenv(rabbitmq_user_env_variable, "user")
+	os.Setenv(rabbitmq_password_env_variable, "password")
 
 	config, err := NewConfig()
 

@@ -19,67 +19,72 @@ var currentDatabaseDefined bool
 var currentPassword string
 var currentPasswordDefined bool
 
+var redis_host_env_variable string = "REDIS_HOST"
+var redis_port_env_variable string = "REDIS_PORT"
+var redis_database_env_variable string = "REDIS_DATABASE"
+var redis_password_env_variable string = "REDIS_PASSWORD"
+
 func setUp() {
 
-	if envHost, found := os.LookupEnv("REDIS_HOST"); found {
+	if envHost, found := os.LookupEnv(redis_host_env_variable); found {
 		currentHost = envHost
 		currentHostDefined = true
 	} else {
 		currentHostDefined = false
 	}
 
-	if envPort, found := os.LookupEnv("REDIS_PORT"); found {
+	if envPort, found := os.LookupEnv(redis_port_env_variable); found {
 		currentPort = envPort
 		currentPortDefined = true
 	} else {
 		currentPortDefined = false
 	}
 
-	if envDatabase, found := os.LookupEnv("REDIS_DATABASE"); found {
+	if envDatabase, found := os.LookupEnv(redis_database_env_variable); found {
 		currentDatabase = envDatabase
 		currentDatabaseDefined = true
 	} else {
 		currentDatabaseDefined = false
 	}
 
-	if envPassword, found := os.LookupEnv("REDIS_PASSWORD"); found {
+	if envPassword, found := os.LookupEnv(redis_password_env_variable); found {
 		currentPassword = envPassword
 		currentPasswordDefined = true
 	} else {
 		currentPasswordDefined = false
 	}
 
-	os.Unsetenv("REDIS_HOST")
-	os.Unsetenv("REDIS_PORT")
-	os.Unsetenv("REDIS_DATABASE")
-	os.Unsetenv("REDIS_PASSWORD")
+	os.Unsetenv(redis_host_env_variable)
+	os.Unsetenv(redis_port_env_variable)
+	os.Unsetenv(redis_database_env_variable)
+	os.Unsetenv(redis_password_env_variable)
 
 }
 
 func teardown() {
 
 	if currentHostDefined {
-		os.Setenv("REDIS_HOST", currentHost)
+		os.Setenv(redis_host_env_variable, currentHost)
 	} else {
-		os.Unsetenv("REDIS_HOST")
+		os.Unsetenv(redis_host_env_variable)
 	}
 
 	if currentPortDefined {
-		os.Setenv("REDIS_PORT", currentPort)
+		os.Setenv(redis_port_env_variable, currentPort)
 	} else {
-		os.Unsetenv("REDIS_PORT")
+		os.Unsetenv(redis_port_env_variable)
 	}
 
 	if currentDatabaseDefined {
-		os.Setenv("REDIS_DATABASE", currentDatabase)
+		os.Setenv(redis_database_env_variable, currentDatabase)
 	} else {
-		os.Unsetenv("REDIS_DATABASE")
+		os.Unsetenv(redis_database_env_variable)
 	}
 
 	if currentPasswordDefined {
-		os.Setenv("REDIS_PASSWORD", currentPassword)
+		os.Setenv(redis_password_env_variable, currentPassword)
 	} else {
-		os.Unsetenv("REDIS_PASSWORD")
+		os.Unsetenv(redis_password_env_variable)
 	}
 
 }
@@ -114,7 +119,7 @@ func TestRedisConfigWithInvalidPort(t *testing.T) {
 	setUp()
 	defer teardown()
 
-	os.Setenv("REDIS_PORT", "invalidport")
+	os.Setenv(redis_port_env_variable, "invalidport")
 	_, err := NewConfig()
 
 	if err == nil {
@@ -128,7 +133,7 @@ func TestRedisConfigWithNeativePort(t *testing.T) {
 	setUp()
 	defer teardown()
 
-	os.Setenv("REDIS_PORT", "-1")
+	os.Setenv(redis_port_env_variable, "-1")
 	_, err := NewConfig()
 
 	if err == nil {
@@ -142,7 +147,7 @@ func TestRedisConfigWithPortTooBig(t *testing.T) {
 	setUp()
 	defer teardown()
 
-	os.Setenv("REDIS_PORT", "100000")
+	os.Setenv(redis_port_env_variable, "100000")
 	_, err := NewConfig()
 
 	if err == nil {
@@ -156,7 +161,7 @@ func TestRedisConfigWithInvalidDatabase(t *testing.T) {
 	setUp()
 	defer teardown()
 
-	os.Setenv("REDIS_DATABASE", "invalid")
+	os.Setenv(redis_database_env_variable, "invalid")
 	_, err := NewConfig()
 
 	if err == nil {
@@ -170,7 +175,7 @@ func TestRedisConfigWithNeativeDatabase(t *testing.T) {
 	setUp()
 	defer teardown()
 
-	os.Setenv("REDIS_DATABASE", "-1")
+	os.Setenv(redis_database_env_variable, "-1")
 	_, err := NewConfig()
 
 	if err == nil {
@@ -184,9 +189,9 @@ func TestRedisConfigWithValidVariables(t *testing.T) {
 	setUp()
 	defer teardown()
 
-	os.Setenv("REDIS_HOST", "127.0.0.1")
-	os.Setenv("REDIS_PORT", "1234")
-	os.Setenv("REDIS_DATABASE", "2")
+	os.Setenv(redis_host_env_variable, "127.0.0.1")
+	os.Setenv(redis_port_env_variable, "1234")
+	os.Setenv(redis_database_env_variable, "2")
 
 	config, err := NewConfig()
 
