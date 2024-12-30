@@ -54,6 +54,7 @@ rabbitmq_unit_tests:
     - develop
     - master
     - /^.*rabbitmq.*$/
+    - /^.*all.*$/
   before_script:
     - export CC=/usr/bin/clang
     - export GOPATH="$(pwd)/go"
@@ -71,6 +72,7 @@ redis_unit_tests:
     - develop
     - master
     - /^.*redis.*$/
+    - /^.*all.*$/
   before_script:
     - export CC=/usr/bin/clang
     - export GOPATH="$(pwd)/go"
@@ -87,6 +89,7 @@ coverage:
   only:
     - develop
     - master
+    - /^.*all.*$/
   before_script:
     - export CC=/usr/bin/clang
     - export GOPATH="$(pwd)/go"
@@ -143,8 +146,9 @@ sonarqube-check:
     - if: $CI_COMMIT_BRANCH == 'master'
     - if: $CI_COMMIT_BRANCH == 'main'
     - if: $CI_COMMIT_BRANCH == 'develop'
+    - if: $CI_COMMIT_BRANCH =~ '/^.*all.*$/'
   dependencies:
-    - code_coverage_report
+    - coverage
 
 sonarqube-vulnerability-report:
   stage: sonarqube-vulnerability-report
@@ -162,6 +166,7 @@ sonarqube-vulnerability-report:
     - if: $CI_COMMIT_BRANCH == 'master'
     - if: $CI_COMMIT_BRANCH == 'main'
     - if: $CI_COMMIT_BRANCH == 'develop'
+    - if: $CI_COMMIT_BRANCH =~ '/^.*all.*$/'
   artifacts:
     expire_in: 1 day
     reports:
@@ -181,4 +186,4 @@ pages:
   only:
     - master
   dependencies:
-    - code_coverage_report
+    - coverage
