@@ -178,7 +178,7 @@ sonarqube-vulnerability-report:
     reports:
       sast: gl-sast-sonar-report.json
   dependencies:
-    - code_coverage_report
+    - coverage
 
 pages:
   stage: deploy
@@ -192,4 +192,4 @@ pages:
   only:
     - master
   dependencies:
-    - coverage
+    - code_coverage_report
