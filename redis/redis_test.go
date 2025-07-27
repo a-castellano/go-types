@@ -97,7 +97,7 @@ func TestRedisConfigWithoutEnvVariables(t *testing.T) {
 	config, err := NewConfig()
 
 	if err != nil {
-		t.Errorf("NewConfig method without any env varible suited shouldn't fail, error was '%s'.", err.Error())
+		t.Errorf("NewConfig method without any env variable set shouldn't fail, error was '%s'.", err.Error())
 	} else {
 
 		if config.Host != "localhost" {
@@ -105,7 +105,7 @@ func TestRedisConfigWithoutEnvVariables(t *testing.T) {
 		}
 
 		if config.Port != 6379 {
-			t.Errorf("redis config.Host should be 6379 but was %d.", config.Port)
+			t.Errorf("redis config.Port should be 6379 but was %d.", config.Port)
 		}
 
 		if config.Database != 0 {
@@ -128,7 +128,7 @@ func TestRedisConfigWithInvalidPort(t *testing.T) {
 
 }
 
-func TestRedisConfigWithNeativePort(t *testing.T) {
+func TestRedisConfigWithNegativePort(t *testing.T) {
 
 	setUp()
 	defer teardown()
@@ -170,7 +170,7 @@ func TestRedisConfigWithInvalidDatabase(t *testing.T) {
 
 }
 
-func TestRedisConfigWithNeativeDatabase(t *testing.T) {
+func TestRedisConfigWithNegativeDatabase(t *testing.T) {
 
 	setUp()
 	defer teardown()
@@ -207,7 +207,7 @@ func TestRedisConfigWithValidVariables(t *testing.T) {
 		}
 
 		if config.Database != 2 {
-			t.Errorf("redis config.Database should be22 but was \"%d\".", config.Database)
+			t.Errorf("redis config.Database should be 2 but was \"%d\".", config.Database)
 		}
 	}
 }

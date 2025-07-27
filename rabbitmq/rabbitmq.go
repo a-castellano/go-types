@@ -20,16 +20,16 @@ type Config struct {
 func NewConfig() (*Config, error) {
 	config := new(Config)
 
-	// Get Host from RABBITMQ_HOST env variable
+	// Get host from RABBITMQ_HOST env variable
 	config.host = cmp.Or(os.Getenv("RABBITMQ_HOST"), "localhost")
 
-	// Get User from RABBITMQ_USER env variable
+	// Get user from RABBITMQ_USER env variable
 	config.user = cmp.Or(os.Getenv("RABBITMQ_USER"), "guest")
 
-	// Get Password from RABBITMQ_PASSWORD env variable
+	// Get password from RABBITMQ_PASSWORD env variable
 	config.password = cmp.Or(os.Getenv("RABBITMQ_PASSWORD"), "guest")
 
-	// Get Port from RABBITMQ_PORT env variable and validate its value
+	// Get port from RABBITMQ_PORT env variable and validate its value
 	var portAtoiErr error
 	config.port, portAtoiErr = strconv.Atoi(cmp.Or(os.Getenv("RABBITMQ_PORT"), "5672"))
 
@@ -38,7 +38,7 @@ func NewConfig() (*Config, error) {
 	}
 
 	if config.port <= 0 || config.port >= 65536 {
-		return config, errors.New("RabbitMQ portvalue must be between 1 and 65535")
+		return config, errors.New("RabbitMQ port value must be between 1 and 65535")
 	}
 
 	config.ConnectionString = "amqp://" + config.user + ":" + config.password + "@" + config.host + ":" + strconv.Itoa(config.port) + "/"
