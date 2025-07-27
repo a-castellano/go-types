@@ -182,7 +182,7 @@ sonarqube-vulnerability-report:
 
 pages:
   stage: deploy
-  image: registry.windmaker.net:5005/a-castellano/limani/base:202412301859
+  image: registry.windmaker.net:5005/a-castellano/limani/base:202507251911
   script:
     - mkdir -p public
     - cp coverage.html public/
