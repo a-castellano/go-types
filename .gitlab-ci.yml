@@ -13,12 +13,6 @@ lint_code:
   stage: lint
   before_script:
     - export CC=/usr/bin/clang
-    - export GOPATH="$(pwd)/go"
-    - mkdir -p "$(pwd)/go"
-    - go env -w GOPATH="$(pwd)/go"
-    - mkdir -p $GOPATH/src/github.com/a-castellano
-    - ln -s ${CI_PROJECT_DIR} $GOPATH/src/github.com/a-castellano/go-types
-    - cd $GOPATH/src/github.com/a-castellano/go-types
   script:
     - make lint
 
@@ -26,12 +20,6 @@ race_detector:
   stage: unit_tests
   before_script:
     - export CC=/usr/bin/clang
-    - export GOPATH="$(pwd)/go"
-    - mkdir -p "$(pwd)/go"
-    - go env -w GOPATH="$(pwd)/go"
-    - mkdir -p $GOPATH/src/github.com/a-castellano
-    - ln -s ${CI_PROJECT_DIR} $GOPATH/src/github.com/a-castellano/go-types
-    - cd $GOPATH/src/github.com/a-castellano/go-types
   script:
     - make race
 
@@ -39,12 +27,6 @@ memory_sanitizer:
   stage: unit_tests
   before_script:
     - export CC=/usr/bin/clang
-    - export GOPATH="$(pwd)/go"
-    - mkdir -p "$(pwd)/go"
-    - go env -w GOPATH="$(pwd)/go"
-    - mkdir -p $GOPATH/src/github.com/a-castellano
-    - ln -s ${CI_PROJECT_DIR} $GOPATH/src/github.com/a-castellano/go-types
-    - cd $GOPATH/src/github.com/a-castellano/go-types
   script:
     - make msan
 
@@ -59,12 +41,6 @@ rabbitmq_unit_tests:
     - if: $CI_COMMIT_BRANCH =~ '/^.*all.*$/'
   before_script:
     - export CC=/usr/bin/clang
-    - export GOPATH="$(pwd)/go"
-    - mkdir -p "$(pwd)/go"
-    - go env -w GOPATH="$(pwd)/go"
-    - mkdir -p $GOPATH/src/github.com/a-castellano
-    - ln -s ${CI_PROJECT_DIR} $GOPATH/src/github.com/a-castellano/go-types
-    - cd $GOPATH/src/github.com/a-castellano/go-types
   script:
     - make test_rabbitmq_unit
 
@@ -79,12 +55,6 @@ redis_unit_tests:
     - if: $CI_COMMIT_BRANCH =~ '/^.*all.*$/'
   before_script:
     - export CC=/usr/bin/clang
-    - export GOPATH="$(pwd)/go"
-    - mkdir -p "$(pwd)/go"
-    - go env -w GOPATH="$(pwd)/go"
-    - mkdir -p $GOPATH/src/github.com/a-castellano
-    - ln -s ${CI_PROJECT_DIR} $GOPATH/src/github.com/a-castellano/go-types
-    - cd $GOPATH/src/github.com/a-castellano/go-types
   script:
     - make test_redis_unit
 
@@ -98,12 +68,6 @@ coverage:
     - if: $CI_COMMIT_BRANCH =~ '/^.*all.*$/'
   before_script:
     - export CC=/usr/bin/clang
-    - export GOPATH="$(pwd)/go"
-    - mkdir -p "$(pwd)/go"
-    - go env -w GOPATH="$(pwd)/go"
-    - mkdir -p $GOPATH/src/github.com/a-castellano
-    - ln -s ${CI_PROJECT_DIR} $GOPATH/src/github.com/a-castellano/go-types
-    - cd $GOPATH/src/github.com/a-castellano/go-types
   script:
     - make coverage
   coverage: /total:\s+.+\s(\d+\.\d+?)%$/
@@ -117,11 +81,6 @@ code_coverage_report:
   stage: report
   before_script:
     - export CC=/usr/bin/clang
-    - export GOPATH="$(pwd)/go"
-    - mkdir -p "$(pwd)/go"
-    - go env -w GOPATH="$(pwd)/go"
-    - mkdir -p $GOPATH/src/github.com/a-castellano
-    - ln -s ${CI_PROJECT_DIR} $GOPATH/src/github.com/a-castellano/go-types
     - cd $GOPATH/src/github.com/a-castellano/go-types
   script:
     - make coverhtml
