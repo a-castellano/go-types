@@ -16,16 +16,16 @@ test: ## Run unit tests
 test_integration: ## Run integration tests
 	@go test --tags=integration_tests -short ./...
 
-test_rabbitmq: ## Run rabbitmq realted tests
+test_rabbitmq: ## Run rabbitmq related tests
 	@go test --tags=rabbitmq_tests -short ./...
 
-test_rabbitmq_unit: ## Run rabbitmq realted tests
+test_rabbitmq_unit: ## Run rabbitmq related tests
 	@go test --tags=rabbitmq_unit_tests -short ./...
 
-test_redis: ## Run redis realted tests
+test_redis: ## Run redis related tests
 	@go test --tags=redis_tests -short ./...
 
-test_redis_unit: ## Run redis realted tests
+test_redis_unit: ## Run redis related tests
 	@go test --tags=redis_unit_tests -short ./...
 
 race: ## Run data race detector

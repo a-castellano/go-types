@@ -98,7 +98,7 @@ func TestRabbitmqConfigWithoutEnvVariables(t *testing.T) {
 	config, err := NewConfig()
 
 	if err != nil {
-		t.Errorf("NewConfig method without any env varible suited shouldn't fail.")
+		t.Errorf("NewConfig method without any env variable set shouldn't fail.")
 	} else {
 		if config.host != "localhost" {
 			t.Errorf("Rabbitmq config.host should be \"localhost\" but was \"%s\".", config.host)
@@ -184,13 +184,13 @@ func TestRabbitmqConfigWithEnvVariables(t *testing.T) {
 	config, err := NewConfig()
 
 	if err != nil {
-		t.Errorf("NewConfig method with valid env varibles suited shouldn't fail.")
+		t.Errorf("NewConfig method with valid env variables set shouldn't fail.")
 	} else {
 		if config.host != "127.0.0.1" {
 			t.Errorf("Rabbitmq config.host should be \"127.0.0.1\" but was \"%s\".", config.host)
 		}
 		if config.port != 1123 {
-			t.Errorf("Rabbitmq config.host should be 1123 but was %d.", config.port)
+			t.Errorf("Rabbitmq config.port should be 1123 but was %d.", config.port)
 		}
 		if config.user != "user" {
 			t.Errorf("Rabbitmq config.user should be \"user\" but was \"%s\".", config.user)

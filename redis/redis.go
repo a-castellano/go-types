@@ -22,7 +22,7 @@ func NewConfig() (*Config, error) {
 	// Get host from REDIS_HOST env variable
 	config.Host = cmp.Or(os.Getenv("REDIS_HOST"), "localhost")
 
-	// Get port from  REDIS_PORT env variable
+	// Get port from REDIS_PORT env variable
 	var portAtoiErr error
 	config.Port, portAtoiErr = strconv.Atoi(cmp.Or(os.Getenv("REDIS_PORT"), "6379"))
 
@@ -34,7 +34,7 @@ func NewConfig() (*Config, error) {
 		return nil, errors.New("Redis port value must be between 1 and 65535")
 	}
 
-	// Get database from REDIS_DATABASE
+	// Get database from REDIS_DATABASE env variable
 	var databaseAtoiErr error
 	config.Database, databaseAtoiErr = strconv.Atoi(cmp.Or(os.Getenv("REDIS_DATABASE"), "0"))
 
@@ -46,7 +46,7 @@ func NewConfig() (*Config, error) {
 		return nil, errors.New("Redis database value must be a positive integer")
 	}
 
-	// Get Password from REDIS_PASSWORD env variable
+	// Get password from REDIS_PASSWORD env variable
 	config.Password = cmp.Or(os.Getenv("REDIS_PASSWORD"), "")
 
 	return &config, nil
