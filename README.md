@@ -4,9 +4,9 @@
 
 This repo stores types used by many of my projects.
 
-The aim is this repo is save time and repeated code unifying them in one only source.
+The aim of this repo is to save time and repeated code by unifying them in one single source.
 
 # Available Types
 
-- [rabbitmq](/rabbitmq): Rabbitmq config management
+- [rabbitmq](/rabbitmq): RabbitMQ config management
 - [redis](/redis): Redis config management
