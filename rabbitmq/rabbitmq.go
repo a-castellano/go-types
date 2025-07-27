@@ -26,10 +26,10 @@ func NewConfig() (*Config, error) {
 	// Get user from RABBITMQ_USER env variable
 	config.user = cmp.Or(os.Getenv("RABBITMQ_USER"), "guest")
 
-	// Get Password from RABBITMQ_PASSWORD env variable
+	// Get password from RABBITMQ_PASSWORD env variable
 	config.password = cmp.Or(os.Getenv("RABBITMQ_PASSWORD"), "guest")
 
-	// Get Port from RABBITMQ_PORT env variable and validate its value
+	// Get port from RABBITMQ_PORT env variable and validate its value
 	var portAtoiErr error
 	config.port, portAtoiErr = strconv.Atoi(cmp.Or(os.Getenv("RABBITMQ_PORT"), "5672"))
 

@@ -101,16 +101,16 @@ func TestRabbitmqConfigWithoutEnvVariables(t *testing.T) {
 		t.Errorf("NewConfig method without any env variable set shouldn't fail.")
 	} else {
 		if config.host != "localhost" {
-			t.Errorf("Rabbitmq config.host should be \"localhost\" but was \"%s\".", config.host)
+			t.Errorf("RabbitMQ config.host should be \"localhost\" but was \"%s\".", config.host)
 		}
 		if config.port != 5672 {
-			t.Errorf("Rabbitmq config.port should be 5672 but was %d.", config.port)
+			t.Errorf("RabbitMQ config.port should be 5672 but was %d.", config.port)
 		}
 		if config.user != "guest" {
-			t.Errorf("Rabbitmq config.user should be \"guest\" but was \"%s\".", config.user)
+			t.Errorf("RabbitMQ config.user should be \"guest\" but was \"%s\".", config.user)
 		}
 		if config.password != "guest" {
-			t.Errorf("Rabbitmq config.password should be \"guest\" but was \"%s\".", config.password)
+			t.Errorf("RabbitMQ config.password should be \"guest\" but was \"%s\".", config.password)
 		}
 	}
 }
@@ -199,7 +199,7 @@ func TestRabbitmqConfigWithEnvVariables(t *testing.T) {
 			t.Errorf("Rabbitmq config.password should be \"password\" but was \"%s\".", config.password)
 		}
 		if config.ConnectionString != "amqp://user:password@127.0.0.1:1123/" {
-			t.Errorf("Rabbitmq config.ConnectionString should be \"amqp://user:password@127.0.0.1:1123/\" but was \"%s\".", config.ConnectionString)
+			t.Errorf("RabbitMQ config.ConnectionString should be \"amqp://user:password@127.0.0.1:1123/\" but was \"%s\".", config.ConnectionString)
 		}
 	}
 }
