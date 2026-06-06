@@ -10,3 +10,11 @@ The aim of this repo is to save time and repeated code by unifying them in one s
 
 - [rabbitmq](/rabbitmq): RabbitMQ config management
 - [redis](/redis): Redis config management
+
+# Local development
+
+I use docker containers to run rests and any other golang related task.
+
+```bash
+podman run --rm -it -v ~/Projects/go-types/:/go-types --workdir /go-types   harbor.windmaker.net/limani/base_golang_1_26   /bin/bash
+```
