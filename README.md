@@ -2,6 +2,10 @@
 
 [![pipeline status](https://git.windmaker.net/a-castellano/go-types/badges/master/pipeline.svg)](https://git.windmaker.net/a-castellano/go-types/pipelines)[![coverage report](https://git.windmaker.net/a-castellano/go-types/badges/master/coverage.svg)](https://a-castellano.gitpages.windmaker.net/go-types/coverage.html)[![Quality Gate Status](https://sonarqube.windmaker.net/api/project_badges/measure?project=a-castellano_go-types_04e236a0-a95a-4aa0-81e1-51718a310623&metric=alert_status&token=sqb_4bee4b06b39f9d249e6196b01357adb97c618a0d)](https://sonarqube.windmaker.net/dashboard?id=a-castellano_go-types_04e236a0-a95a-4aa0-81e1-51718a310623)
 
+<p align="center">
+  <img src="logo.png" alt="go-types" />
+</p>
+
 This repo stores types used by many of my projects.
 
 The aim of this repo is to save time and repeated code by unifying them in one single source.
@@ -10,3 +14,11 @@ The aim of this repo is to save time and repeated code by unifying them in one s
 
 - [rabbitmq](/rabbitmq): RabbitMQ config management
 - [redis](/redis): Redis config management
+
+# Local development
+
+I use docker containers to run rests and any other golang related task.
+
+```bash
+podman run --rm -it -v ~/Projects/go-types/:/go-types --workdir /go-types   harbor.windmaker.net/limani/base_golang_1_26   /bin/bash
+```
