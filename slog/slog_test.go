@@ -117,7 +117,7 @@ func TestSlogConfigWithAppNameVariable(t *testing.T) {
 	config, err := NewConfig()
 
 	if err != nil {
-		t.Errorf("NewConfig method with \"APP_NAME\" env variable set shouln't fail, error was '%s'.", err.Error())
+		t.Errorf("NewConfig method with \"APP_NAME\" env variable set shouldn't fail, error was '%s'.", err.Error())
 	} else {
 		// check default values
 		if config.AppName != "MyApp" {
@@ -142,9 +142,9 @@ func TestSlogConfigWithInvalidLogLevelValue(t *testing.T) {
 	_, err := NewConfig()
 
 	if err == nil {
-		t.Errorf("NewConfig method with an invalid \"SLOG_LEVEL\" value set shoud fail")
+		t.Errorf("NewConfig method with an invalid \"SLOG_LEVEL\" value set should fail")
 	} else {
-		expectedError := "log level defined by `SLOG_LEVEL` variable only accepts the follwing values: \"Debug\", \"Info\", \"Warn\" or \"Error\". \"invalid\" is not a valid value."
+		expectedError := "log level defined by `SLOG_LEVEL` variable only accepts the following values: \"Debug\", \"Info\", \"Warn\" or \"Error\". \"invalid\" is not a valid value."
 		if err.Error() != expectedError {
 			t.Fatalf("Expected error '%s' but got '%s'", expectedError, err.Error())
 		}
@@ -162,7 +162,7 @@ func TestSlogConfigWithInvalidFormatValue(t *testing.T) {
 	_, err := NewConfig()
 
 	if err == nil {
-		t.Errorf("NewConfig method with an invalid \"SLOG_FORMAT\" value set shoud fail")
+		t.Errorf("NewConfig method with an invalid \"SLOG_FORMAT\" value set should fail")
 	} else {
 		expectedError := "log format defined by `SLOG_FORMAT` variable only accepts the values \"JSON\" or \"plain\", \"invalid\" is not a valid value"
 		if err.Error() != expectedError {
@@ -182,7 +182,7 @@ func TestSlogConfigWithInvalidAddSourceValue(t *testing.T) {
 	_, err := NewConfig()
 
 	if err == nil {
-		t.Errorf("NewConfig method with an invalid \"SLOG_ADD_SOURCE\" value set shoud fail")
+		t.Errorf("NewConfig method with an invalid \"SLOG_ADD_SOURCE\" value set should fail")
 	} else {
 		expectedError := "add log source property defined by `SLOG_ADD_SOURCE` variable only accepts the values \"true\" or \"false\", \"invalid\" is not a valid value"
 		if err.Error() != expectedError {
@@ -202,7 +202,7 @@ func TestSlogConfigLevelDebug(t *testing.T) {
 	config, err := NewConfig()
 
 	if err != nil {
-		t.Errorf("NewConfig method call where we are testing log levels shouln't fail, error was '%s'.", err.Error())
+		t.Errorf("NewConfig method call where we are testing log levels shouldn't fail, error was '%s'.", err.Error())
 	} else {
 		expectedLevel := formerslog.LevelDebug
 		if config.DefaultLevel != expectedLevel {
@@ -222,7 +222,7 @@ func TestSlogConfigLevelWarn(t *testing.T) {
 	config, err := NewConfig()
 
 	if err != nil {
-		t.Errorf("NewConfig method call where we are testing log levels shouln't fail, error was '%s'.", err.Error())
+		t.Errorf("NewConfig method call where we are testing log levels shouldn't fail, error was '%s'.", err.Error())
 	} else {
 		expectedLevel := formerslog.LevelWarn
 		if config.DefaultLevel != expectedLevel {
@@ -242,7 +242,7 @@ func TestSlogConfigLevelError(t *testing.T) {
 	config, err := NewConfig()
 
 	if err != nil {
-		t.Errorf("NewConfig method call where we are testing log levels shouln't fail, error was '%s'.", err.Error())
+		t.Errorf("NewConfig method call where we are testing log levels shouldn't fail, error was '%s'.", err.Error())
 	} else {
 		expectedLevel := formerslog.LevelError
 		if config.DefaultLevel != expectedLevel {

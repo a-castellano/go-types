@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-// Config is a type that defines required data for connecting definig slog parameters
+// Config is a type that defines required data for defining slog parameters
 type Config struct {
 	DefaultLevel formerslog.Level // Specifies log default level, Info for example
 	Format       string           // Log format JSON or plain
@@ -33,10 +33,10 @@ func NewConfig() (*Config, error) {
 	case "Error":
 		config.DefaultLevel = formerslog.LevelError
 	default:
-		return nil, fmt.Errorf("log level defined by `SLOG_LEVEL` variable only accepts the follwing values: \"Debug\", \"Info\", \"Warn\" or \"Error\". \"%s\" is not a valid value.", defaultLevel)
+		return nil, fmt.Errorf("log level defined by `SLOG_LEVEL` variable only accepts the following values: \"Debug\", \"Info\", \"Warn\" or \"Error\". \"%s\" is not a valid value.", defaultLevel)
 	}
 
-	// Get format from SLOG_FORMAT env variable, dafult falue is JSON
+	// Get format from SLOG_FORMAT env variable, default value is JSON
 	config.Format = cmp.Or(os.Getenv("SLOG_FORMAT"), "JSON")
 	if config.Format != "JSON" && config.Format != "plain" {
 		return nil, fmt.Errorf("log format defined by `SLOG_FORMAT` variable only accepts the values \"JSON\" or \"plain\", \"%s\" is not a valid value", config.Format)
