@@ -14,6 +14,7 @@ The aim of this repo is to save time and repeated code by unifying them in one s
 
 - [rabbitmq](/rabbitmq): RabbitMQ config management
 - [redis](/redis): Redis config management
+- [slog](/slog): slog logger config management
 
 # Local development
 
