@@ -12,6 +12,7 @@ import (
 type Config struct {
 	DefaultLevel formerslog.Level // Specifies log default level, Info for example
 	Format       string           // Log format JSON or plain
+	Output       string           // Log output, default is stdout, the service will manage the output if a file is set instead of strdout or sterr
 	AddSource    bool             // Adds file:line to logs
 	AppName      string           // The name of the app
 }
@@ -53,6 +54,7 @@ func NewConfig() (*Config, error) {
 	if config.AppName == "" {
 		return nil, errors.New("env variable \"APP_NAME\" must be defined and have a value")
 	}
+	config.Output = cmp.Or(os.Getenv("SLOG_OUTPUT"), "stdout")
 
 	return &config, nil
 }
