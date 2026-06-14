@@ -28,6 +28,12 @@ test_redis: ## Run redis related tests
 test_redis_unit: ## Run redis related tests
 	@go test --tags=redis_unit_tests -short ./...
 
+test_slog: ## Run slog related tests
+	@go test --tags=slog_tests -short ./...
+
+test_slog_unit: ## Run slog related tests
+	@go test --tags=slog_unit_tests -short ./...
+
 race: ## Run data race detector
 	@go test -race -short ./...
 
@@ -38,7 +44,7 @@ coverage: ## Generate global code coverage report
 	./scripts/coverage.sh;
 
 coverhtml: ## Generate global code coverage report in HTML
-	./scripts/coverage.sh html;
+	go tool cover -html=cover/coverage.report -o coverage.html;
 
 #build: ## Build the binary file
 #	@go build -v $(PKG)
