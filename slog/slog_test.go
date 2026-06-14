@@ -3,6 +3,7 @@
 package slog
 
 import (
+	formerslog "log/slog"
 	"os"
 	"testing"
 )
@@ -89,7 +90,7 @@ func teardown() {
 
 }
 
-func TestRedisConfigWithoutEnvVariables(t *testing.T) {
+func TestSlogConfigWithoutEnvVariables(t *testing.T) {
 
 	setUp()
 	defer teardown()
@@ -102,6 +103,150 @@ func TestRedisConfigWithoutEnvVariables(t *testing.T) {
 		expectedError := "env variable \"APP_NAME\" must be defined and have a value"
 		if err.Error() != expectedError {
 			t.Fatalf("Expected error '%s' but got '%s'", expectedError, err.Error())
+		}
+	}
+}
+
+func TestSlogConfigWithAppNameVariable(t *testing.T) {
+
+	setUp()
+	defer teardown()
+
+	os.Setenv(slog_appname_env_variable, "MyApp")
+
+	config, err := NewConfig()
+
+	if err != nil {
+		t.Errorf("NewConfig method with \"APP_NAME\" env variable set shouln't fail, error was '%s'.", err.Error())
+	} else {
+		// check default values
+		if config.AppName != "MyApp" {
+
+			t.Errorf("NewConfig method with \"APP_NAME\" env variable set should configure config.AppName with that value, actual value was '%s'.", config.AppName)
+		}
+
+		if config.DefaultLevel != formerslog.LevelInfo {
+			t.Errorf("NewConfig default level should be %d but it was %d.", formerslog.LevelInfo, config.DefaultLevel)
+		}
+	}
+}
+
+func TestSlogConfigWithInvalidLogLevelValue(t *testing.T) {
+
+	setUp()
+	defer teardown()
+
+	os.Setenv(slog_appname_env_variable, "MyApp")
+	os.Setenv(slog_defaultlevel_env_variable, "invalid")
+
+	_, err := NewConfig()
+
+	if err == nil {
+		t.Errorf("NewConfig method with an invalid \"SLOG_LEVEL\" value set shoud fail")
+	} else {
+		expectedError := "log level defined by `SLOG_LEVEL` variable only accepts the follwing values: \"Debug\", \"Info\", \"Warn\" or \"Error\". \"invalid\" is not a valid value."
+		if err.Error() != expectedError {
+			t.Fatalf("Expected error '%s' but got '%s'", expectedError, err.Error())
+		}
+	}
+}
+
+func TestSlogConfigWithInvalidFormatValue(t *testing.T) {
+
+	setUp()
+	defer teardown()
+
+	os.Setenv(slog_appname_env_variable, "MyApp")
+	os.Setenv(slog_format_env_variable, "invalid")
+
+	_, err := NewConfig()
+
+	if err == nil {
+		t.Errorf("NewConfig method with an invalid \"SLOG_FORMAT\" value set shoud fail")
+	} else {
+		expectedError := "log format defined by `SLOG_FORMAT` variable only accepts the values \"JSON\" or \"plain\", \"invalid\" is not a valid value"
+		if err.Error() != expectedError {
+			t.Fatalf("Expected error '%s' but got '%s'", expectedError, err.Error())
+		}
+	}
+}
+
+func TestSlogConfigWithInvalidAddSourceValue(t *testing.T) {
+
+	setUp()
+	defer teardown()
+
+	os.Setenv(slog_appname_env_variable, "MyApp")
+	os.Setenv(slog_addsource_env_variable, "invalid")
+
+	_, err := NewConfig()
+
+	if err == nil {
+		t.Errorf("NewConfig method with an invalid \"SLOG_ADD_SOURCE\" value set shoud fail")
+	} else {
+		expectedError := "add log source property defined by `SLOG_ADD_SOURCE` variable only accepts the values \"true\" or \"false\", \"invalid\" is not a valid value"
+		if err.Error() != expectedError {
+			t.Fatalf("Expected error '%s' but got '%s'", expectedError, err.Error())
+		}
+	}
+}
+
+func TestSlogConfigLevelDebug(t *testing.T) {
+
+	setUp()
+	defer teardown()
+
+	os.Setenv(slog_appname_env_variable, "MyApp")
+	os.Setenv(slog_defaultlevel_env_variable, "Debug")
+
+	config, err := NewConfig()
+
+	if err != nil {
+		t.Errorf("NewConfig method call where we are testing log levels shouln't fail, error was '%s'.", err.Error())
+	} else {
+		expectedLevel := formerslog.LevelDebug
+		if config.DefaultLevel != expectedLevel {
+			t.Errorf("NewConfig default level should be %d but it was %d.", expectedLevel, config.DefaultLevel)
+		}
+	}
+}
+
+func TestSlogConfigLevelWarn(t *testing.T) {
+
+	setUp()
+	defer teardown()
+
+	os.Setenv(slog_appname_env_variable, "MyApp")
+	os.Setenv(slog_defaultlevel_env_variable, "Warn")
+
+	config, err := NewConfig()
+
+	if err != nil {
+		t.Errorf("NewConfig method call where we are testing log levels shouln't fail, error was '%s'.", err.Error())
+	} else {
+		expectedLevel := formerslog.LevelWarn
+		if config.DefaultLevel != expectedLevel {
+			t.Errorf("NewConfig default level should be %d but it was %d.", expectedLevel, config.DefaultLevel)
+		}
+	}
+}
+
+func TestSlogConfigLevelError(t *testing.T) {
+
+	setUp()
+	defer teardown()
+
+	os.Setenv(slog_appname_env_variable, "MyApp")
+	os.Setenv(slog_defaultlevel_env_variable, "Error")
+
+	config, err := NewConfig()
+
+	if err != nil {
+		t.Errorf("NewConfig method call where we are testing log levels shouln't fail, error was '%s'.", err.Error())
+	} else {
+		expectedLevel := formerslog.LevelError
+		if config.DefaultLevel != expectedLevel {
+			t.Errorf("NewConfig default level should be %d but it was %d.", expectedLevel, config.DefaultLevel)
 		}
 	}
 }
