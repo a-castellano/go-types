@@ -236,7 +236,7 @@ func TestLogValue(t *testing.T) {
 			} else {
 				rabbitmqConfig := loggedData["rabbitmq config"].(map[string]interface{})
 				passwordValue := rabbitmqConfig["password"].(string)
-				if passwordValue != "REDACTED" {
+				if passwordValue != "*****" {
 					t.Errorf("TestLogValue has failed, message should be \"REDACTED\" but it was \"%s\"", passwordValue)
 				}
 			}

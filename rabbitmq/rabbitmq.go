@@ -52,6 +52,6 @@ func (config Config) LogValue() slog.Value {
 		slog.String("host", config.host),
 		slog.Int("port", config.port),
 		slog.String("user", config.user),
-		slog.String("password", "REDACTED"),
+		slog.String("password", "*****"),
 	)
 }
