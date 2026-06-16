@@ -3,6 +3,7 @@ package redis
 import (
 	"cmp"
 	"errors"
+	"log/slog"
 	"os"
 	"strconv"
 )
@@ -50,4 +51,19 @@ func NewConfig() (*Config, error) {
 	config.Password = cmp.Or(os.Getenv("REDIS_PASSWORD"), "")
 
 	return &config, nil
+}
+
+// LogValue allows to log Config masking password value
+func (config Config) LogValue() slog.Value {
+	attrs := []slog.Attr{
+		slog.String("host", config.Host),
+		slog.Int("port", config.Port),
+		slog.Int("database", config.Database),
+	}
+
+	if config.Password != "" {
+		attrs = append(attrs, slog.String("password", "*****"))
+	}
+
+	return slog.GroupValue(attrs...)
 }
