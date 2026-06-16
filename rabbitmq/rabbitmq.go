@@ -3,6 +3,7 @@ package rabbitmq
 import (
 	"cmp"
 	"errors"
+	"log/slog"
 	"os"
 	"strconv"
 )
@@ -43,4 +44,14 @@ func NewConfig() (*Config, error) {
 
 	config.ConnectionString = "amqp://" + config.user + ":" + config.password + "@" + config.host + ":" + strconv.Itoa(config.port) + "/"
 	return config, nil
+}
+
+// LogValue allows to log Config masking password value
+func (config Config) LogValue() slog.Value {
+	return slog.GroupValue(
+		slog.String("host", config.host),
+		slog.Int("port", config.port),
+		slog.String("user", config.user),
+		slog.String("password", "*****"),
+	)
 }
