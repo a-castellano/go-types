@@ -3,6 +3,9 @@
 package redis
 
 import (
+	"bytes"
+	"encoding/json"
+	"log/slog"
 	"os"
 	"testing"
 )
@@ -208,6 +211,85 @@ func TestRedisConfigWithValidVariables(t *testing.T) {
 
 		if config.Database != 2 {
 			t.Errorf("redis config.Database should be 2 but was \"%d\".", config.Database)
+		}
+	}
+}
+
+func TestLogValue(t *testing.T) {
+
+	setUp()
+	defer teardown()
+
+	os.Setenv(redis_host_env_variable, "127.0.0.1")
+	os.Setenv(redis_port_env_variable, "1234")
+	os.Setenv(redis_database_env_variable, "2")
+
+	config, err := NewConfig()
+
+	if err != nil {
+		t.Errorf("NewConfig method with valid config shouldn't fail, error was '%s'.", err.Error())
+	} else {
+		var buf bytes.Buffer
+		logger := slog.New(slog.NewJSONHandler(&buf, nil))
+
+		logger.Info("test log", "redis config", config)
+
+		bufferLen := buf.Len()
+
+		if bufferLen <= 0 {
+			t.Errorf("TestLogValue has failed, buffer is empty")
+		} else {
+			var loggedData map[string]interface{}
+			if err := json.Unmarshal(buf.Bytes(), &loggedData); err != nil {
+				t.Errorf("TestLogValue has failed, cannot unmarshal json log")
+			} else {
+				redisConfig := loggedData["redis config"].(map[string]interface{})
+				databaseValue := redisConfig["database"].(float64)
+				if databaseValue != 2 {
+					t.Errorf("TestLogValue has failed, database should be 2 but it was %0.0f", databaseValue)
+				}
+			}
+
+		}
+	}
+}
+
+func TestLogValueWithPassword(t *testing.T) {
+
+	setUp()
+	defer teardown()
+
+	os.Setenv(redis_host_env_variable, "127.0.0.1")
+	os.Setenv(redis_port_env_variable, "1234")
+	os.Setenv(redis_database_env_variable, "2")
+	os.Setenv(redis_password_env_variable, "ultraSecret")
+
+	config, err := NewConfig()
+
+	if err != nil {
+		t.Errorf("NewConfig method with valid config shouldn't fail, error was '%s'.", err.Error())
+	} else {
+		var buf bytes.Buffer
+		logger := slog.New(slog.NewJSONHandler(&buf, nil))
+
+		logger.Info("test log", "redis config", config)
+
+		bufferLen := buf.Len()
+
+		if bufferLen <= 0 {
+			t.Errorf("TestLogValue has failed, buffer is empty")
+		} else {
+			var loggedData map[string]interface{}
+			if err := json.Unmarshal(buf.Bytes(), &loggedData); err != nil {
+				t.Errorf("TestLogValue has failed, cannot unmarshal json log")
+			} else {
+				redisConfig := loggedData["redis config"].(map[string]interface{})
+				passwordValue := redisConfig["password"].(string)
+				if passwordValue != "*****" {
+					t.Errorf("TestLogValue has failed, password should be \"*****\" but it was \"%s\"", passwordValue)
+				}
+			}
+
 		}
 	}
 }
