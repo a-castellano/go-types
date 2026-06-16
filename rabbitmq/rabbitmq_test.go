@@ -3,6 +3,9 @@
 package rabbitmq
 
 import (
+	"bytes"
+	"encoding/json"
+	"log/slog"
 	"os"
 	"testing"
 )
@@ -201,5 +204,44 @@ func TestRabbitmqConfigWithEnvVariables(t *testing.T) {
 		if config.ConnectionString != "amqp://user:password@127.0.0.1:1123/" {
 			t.Errorf("RabbitMQ config.ConnectionString should be \"amqp://user:password@127.0.0.1:1123/\" but was \"%s\".", config.ConnectionString)
 		}
+	}
+}
+
+func TestLogValue(t *testing.T) {
+	setUp()
+	defer teardown()
+
+	os.Setenv(rabbitmq_host_env_variable, "127.0.0.1")
+	os.Setenv(rabbitmq_port_env_variable, "1123")
+	os.Setenv(rabbitmq_user_env_variable, "user")
+	os.Setenv(rabbitmq_password_env_variable, "ULTRA_SECRET")
+
+	config, err := NewConfig()
+	if err != nil {
+		t.Errorf("NewConfig method with valid env variables set shouldn't fail.")
+	} else {
+		var buf bytes.Buffer
+		logger := slog.New(slog.NewJSONHandler(&buf, nil))
+
+		logger.Info("test log", "rabbitmq config", config)
+
+		bufferLen := buf.Len()
+
+		if bufferLen <= 0 {
+			t.Errorf("TestLogValue has failed, buffer is empty")
+		} else {
+			var loggedData map[string]interface{}
+			if err := json.Unmarshal(buf.Bytes(), &loggedData); err != nil {
+				t.Errorf("TestLogValue has failed, cannot unmarshal json log")
+			} else {
+				rabbitmqConfig := loggedData["rabbitmq config"].(map[string]interface{})
+				passwordValue := rabbitmqConfig["rambbitmq_password"].(string)
+				if passwordValue != "REDACTED" {
+					t.Errorf("TestLogValue has failed, message should be \"REDACTED\" but it was \"%s\"", passwordValue)
+				}
+			}
+
+		}
+
 	}
 }
