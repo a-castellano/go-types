@@ -49,9 +49,9 @@ func NewConfig() (*Config, error) {
 // LogValue allows to log Config masking password value
 func (config Config) LogValue() slog.Value {
 	return slog.GroupValue(
-		slog.String("rambbitmq_host", config.host),
-		slog.Int("rambbitmq_port", config.port),
-		slog.String("rambbitmq_user", config.user),
-		slog.String("rambbitmq_password", "REDACTED"),
+		slog.String("host", config.host),
+		slog.Int("port", config.port),
+		slog.String("user", config.user),
+		slog.String("password", "REDACTED"),
 	)
 }

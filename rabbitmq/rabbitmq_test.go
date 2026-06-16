@@ -235,7 +235,7 @@ func TestLogValue(t *testing.T) {
 				t.Errorf("TestLogValue has failed, cannot unmarshal json log")
 			} else {
 				rabbitmqConfig := loggedData["rabbitmq config"].(map[string]interface{})
-				passwordValue := rabbitmqConfig["rambbitmq_password"].(string)
+				passwordValue := rabbitmqConfig["password"].(string)
 				if passwordValue != "REDACTED" {
 					t.Errorf("TestLogValue has failed, message should be \"REDACTED\" but it was \"%s\"", passwordValue)
 				}
