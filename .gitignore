@@ -26,3 +26,5 @@ cover/*
 coverage.html
 
 .vscode/*
+
+plan/*
