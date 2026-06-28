@@ -12,14 +12,31 @@ The aim of this repo is to save time and repeated code by unifying them in one s
 
 # Available Types
 
-- [rabbitmq](/rabbitmq): RabbitMQ config management
-- [redis](/redis): Redis config management
-- [slog](/slog): slog logger config management
+- [rabbitmq](/types/rabbitmq): RabbitMQ config management
+- [redis](/types/redis): Redis config management
+- [slog](/types/slog): slog logger config management
 
 # Local development
 
-I use docker containers to run rests and any other golang related task.
+I run every golang task (tests, vet, coverage…) inside a container, **never against a host toolchain**. The same image — `harbor.windmaker.net/limani/base_golang_1_26` — is used in local development, CI and production, so the environment is identical everywhere and "works on my machine" gaps disappear.
+
+The development container is defined in [development/docker-compose.yml](development/docker-compose.yml). It mounts the repo into `/app` and persists the Go module cache in `development/gomodcache/` (git-ignored) so dependencies are not re-downloaded on every run. Unit tests are self-contained, so no Redis/RabbitMQ services are needed here.
+
+Bring the container up and open a shell in it:
 
 ```bash
-podman run --rm -it -v ~/Projects/go-types/:/go-types --workdir /go-types   harbor.windmaker.net/limani/base_golang_1_26   /bin/bash
+podman compose -f development/docker-compose.yml up -d
+podman compose -f development/docker-compose.yml exec golang /bin/bash
+```
+
+Once inside, run any target, e.g.:
+
+```bash
+make test
+```
+
+Tear it down when finished:
+
+```bash
+podman compose -f development/docker-compose.yml down
 ```

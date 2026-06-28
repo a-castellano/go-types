@@ -1,4 +1,4 @@
-//go:build integration_tests || unit_tests || redis_tests || redis_unit_tests
+//go:build unit_tests || redis_unit_tests
 
 package redis
 

@@ -3,7 +3,7 @@ PKG := "github.com/a-castellano/$(PROJECT_NAME)"
 PKG_LIST := $(shell go list ${PKG}/... | grep -v /vendor/)
 GO_FILES := $(shell find . -name '*.go' | grep -v /vendor/ | grep -v _test.go)
 
-.PHONY: all build clean test test_integration test_rabbitmq coverage coverhtml lint race msan
+.PHONY: all build clean test test_rabbitmq_unit test_redis_unit test_slog_unit coverage coverhtml lint race msan help
 
 all: build
 
@@ -13,35 +13,23 @@ lint: ## Lint the files
 test: ## Run unit tests
 	@go test --tags=unit_tests -short ./...
 
-test_integration: ## Run integration tests
-	@go test --tags=integration_tests -short ./...
-
-test_rabbitmq: ## Run rabbitmq related tests
-	@go test --tags=rabbitmq_tests -short ./...
-
 test_rabbitmq_unit: ## Run rabbitmq related tests
 	@go test --tags=rabbitmq_unit_tests -short ./...
 
-test_redis: ## Run redis related tests
-	@go test --tags=redis_tests -short ./...
-
 test_redis_unit: ## Run redis related tests
 	@go test --tags=redis_unit_tests -short ./...
-
-test_slog: ## Run slog related tests
-	@go test --tags=slog_tests -short ./...
 
 test_slog_unit: ## Run slog related tests
 	@go test --tags=slog_unit_tests -short ./...
 
 race: ## Run data race detector
-	@go test -race -short ./...
+	@go test --tags=unit_tests -race -short ./...
 
 msan: ## Run memory sanitizer
-	@go test -msan -short ./...
+	@go test --tags=unit_tests -msan -short ./...
 
 coverage: ## Generate global code coverage report
-	./scripts/coverage.sh;
+	./development/coverage.sh;
 
 coverhtml: ## Generate global code coverage report in HTML
 	go tool cover -html=cover/coverage.report -o coverage.html;
