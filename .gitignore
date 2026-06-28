@@ -24,6 +24,7 @@ go.work.sum
 
 cover/*
 coverage.html
+public/
 
 .vscode/*
 

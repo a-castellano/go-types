@@ -157,6 +157,7 @@ pages:
   image: harbor.windmaker.net/limani/base
   script:
     - mkdir -p public
+    - cp development/gitlab-pages/* public/
     - cp coverage.html public/
   artifacts:
     paths:
