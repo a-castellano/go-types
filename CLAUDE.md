@@ -25,6 +25,8 @@ There may be a directory called `plan/` at the root of the project (it is git-ig
 
 When asked to review or update the plan, look for files inside `plan/` and treat them as the source of truth for current goals and progress.
 
+Because `plan/` is git-ignored, **documentation must never reference any document inside the `plan/` directory**. Versioned docs would end up with broken links for anyone who does not have the plan locally. Keep plan references confined to the `plan/` directory itself.
+
 ## Exceptions (when explicitly requested)
 
 - **Documentation and comments**: you may be asked to review existing docs or generate documentation and inline code comments.
