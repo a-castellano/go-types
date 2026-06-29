@@ -1,4 +1,4 @@
-//go:build integration_tests || unit_tests || rabbitmq_tests || rabbitmq_unit_tests
+//go:build unit_tests || rabbitmq_unit_tests
 
 package rabbitmq
 

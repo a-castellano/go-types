@@ -24,5 +24,10 @@ go.work.sum
 
 cover/*
 coverage.html
+public/
 
 .vscode/*
+
+plan/*
+
+development/gomodcache/*

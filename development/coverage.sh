@@ -5,7 +5,7 @@ echo 'mode: count' > cover/coverage.report
 
 PKG_LIST=$(go list ./... | grep -v /vendor/)
 for package in ${PKG_LIST}; do
-    go test --tags=integration_tests -covermode=count -coverprofile "cover/${package##*/}.cov" "$package" ;
+    go test --tags=unit_tests -covermode=count -coverprofile "cover/${package##*/}.cov" "$package" ;
 done
 tail -q -n +2 cover/*.cov >> cover/coverage.report
 go tool cover -func=cover/coverage.report

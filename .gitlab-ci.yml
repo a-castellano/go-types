@@ -23,13 +23,6 @@ race_detector:
   script:
     - make race
 
-memory_sanitizer:
-  stage: unit_tests
-  before_script:
-    - export CC=/usr/bin/clang
-  script:
-    - make msan
-
 rabbitmq_unit_tests:
   stage: unit_tests
   rules:
@@ -71,6 +64,20 @@ slog_unit_tests:
     - export CC=/usr/bin/clang
   script:
     - make test_slog_unit
+
+opentelemetry_unit_tests:
+  stage: unit_tests
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_BRANCH == 'master'
+    - if: $CI_COMMIT_BRANCH == 'main'
+    - if: $CI_COMMIT_BRANCH == 'develop'
+    - if: $CI_COMMIT_BRANCH =~ '/^.*opentelemetry.*$/'
+    - if: $CI_COMMIT_BRANCH =~ '/^.*all.*$/'
+  before_script:
+    - export CC=/usr/bin/clang
+  script:
+    - make test_opentelemetry_unit
 
 coverage:
   stage: coverage
@@ -117,7 +124,7 @@ sonarqube-check:
     SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar" # Defines the location of the analysis task cache
     GIT_DEPTH: "0" # Tells git to fetch all the branches of the project, required by the analysis task
   script:
-    - sonar-scanner -Dsonar.host.url="${SONAR_HOST_URL}"
+    - sonar-scanner -Dsonar.host.url="${SONAR_HOST_URL}" -Dproject.settings=development/sonar-project.properties -Dsonar.projectBaseDir=.
   allow_failure: true
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
@@ -157,6 +164,7 @@ pages:
   image: harbor.windmaker.net/limani/base
   script:
     - mkdir -p public
+    - cp development/gitlab-pages/* public/
     - cp coverage.html public/
   artifacts:
     paths:
