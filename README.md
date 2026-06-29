@@ -15,6 +15,7 @@ The aim of this repo is to save time and repeated code by unifying them in one s
 - [rabbitmq](/types/rabbitmq): RabbitMQ config management
 - [redis](/types/redis): Redis config management
 - [slog](/types/slog): slog logger config management
+- [opentelemetry](/types/opentelemetry): opentelemetry config management
 
 # Local development
 
