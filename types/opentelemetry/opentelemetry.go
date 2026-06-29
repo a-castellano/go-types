@@ -1,7 +1,6 @@
 package opentelemetry
 
 import (
-	"cmp"
 	"errors"
 	"os"
 )
@@ -15,7 +14,7 @@ type Config struct {
 func NewConfig() (*Config, error) {
 	config := Config{}
 
-	config.AppName = cmp.Or(os.Getenv("APP_NAME"), "")
+	config.AppName = os.Getenv("APP_NAME")
 	if config.AppName == "" {
 		return nil, errors.New("env variable \"APP_NAME\" must be defined and have a value")
 	}
@@ -24,7 +23,13 @@ func NewConfig() (*Config, error) {
 
 	if OtelServiceNameVarDefined {
 		return nil, errors.New("env variable \"OTEL_SERVICE_NAME\" cannot be defined. APP_NAME will be use to set that value")
+	}
 
+	_, OtelResourceAttributesVarDefined := os.LookupEnv("OTEL_RESOURCE_ATTRIBUTES")
+	// For the time being this vriable is forbidden, its values will be managed if required
+
+	if OtelResourceAttributesVarDefined {
+		return nil, errors.New("env variable \"OTEL_RESOURCE_ATTRIBUTES\" cannot be defined for the time being")
 	}
 
 	return &config, nil
