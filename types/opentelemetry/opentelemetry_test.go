@@ -108,6 +108,8 @@ func TestOpenTelemetryConfigWithAppNameAndOtelResourceAttributesVariable(t *test
 	}
 }
 
+// TestOpenTelemetryConfig covers the happy path with only APP_NAME set: NewConfig
+// succeeds and, since ENABLE_TELEMETRY is unset, telemetry defaults to disabled.
 func TestOpenTelemetryConfig(t *testing.T) {
 
 	setUp()
@@ -131,6 +133,8 @@ func TestOpenTelemetryConfig(t *testing.T) {
 	}
 }
 
+// TestOpenTelemetryEnabledFail covers an invalid ENABLE_TELEMETRY value: only
+// "true" or "false" are accepted, anything else must make NewConfig fail.
 func TestOpenTelemetryEnabledFail(t *testing.T) {
 
 	setUp()
@@ -152,6 +156,8 @@ func TestOpenTelemetryEnabledFail(t *testing.T) {
 
 }
 
+// TestOpenTelemetryEnabledConfig covers ENABLE_TELEMETRY set to "true": the flag
+// is the single source of truth and Enabled must reflect it.
 func TestOpenTelemetryEnabledConfig(t *testing.T) {
 
 	setUp()
