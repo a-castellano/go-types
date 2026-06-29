@@ -21,16 +21,18 @@ var envVariables = map[string]envVariable{
 
 func setUp() {
 
-	for _, variable := range envVariables {
+	for key, variable := range envVariables {
 
 		if envValue, found := os.LookupEnv(variable.VariableName); found {
 			variable.Value = envValue
 			variable.IsDefined = true
 		} else {
-			variable.IsDefined = true
+			variable.IsDefined = false
 		}
 
 		os.Unsetenv(variable.VariableName)
+
+		envVariables[key] = variable
 	}
 
 }
