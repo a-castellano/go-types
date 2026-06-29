@@ -1,0 +1,11 @@
+# Docker Compose configuration for go-types development environment
+# Unit tests only: no Redis/RabbitMQ services are needed here.
+services:
+  # Go development container with the project code mounted
+  golang:
+    image: harbor.windmaker.net/limani/base_golang_1_26
+    volumes:
+      - ..:/app # Mount the project directory into the container
+      - ./gomodcache:/root/go/pkg/mod # Persist Go module cache locally
+    working_dir: /app
+    command: tail -f /dev/null # Keep container running

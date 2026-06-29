@@ -1,4 +1,4 @@
-//go:build integration_tests || unit_tests || slog_tests || slog_unit_tests
+//go:build unit_tests || slog_unit_tests
 
 package slog
 
