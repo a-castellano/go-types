@@ -10,6 +10,10 @@ The following env variable must be defined when using this type:
 
 - `APP_NAME` defines the application name, it must be a non-empty string, it has no default value and must be set. Its value is the single source for the telemetry `service.name`.
 
+## Optional variables
+
+- `ENABLE_TELEMETRY` is the single source of truth for whether telemetry is active. It is optional and, when unset, telemetry is disabled (opt-in). The only accepted values are the strings `true` and `false`; any other value makes `NewConfig` return an error. The SDK startup code in `go-services` reads this flag to decide between wiring the real SDK and returning a no-op startup, so the on/off decision lives here in the shared config rather than scattered in each app.
+
 ## Forbidden variables
 
 These variables must not be defined; `NewConfig` returns an error if any of them is present:
