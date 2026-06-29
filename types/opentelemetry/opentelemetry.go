@@ -5,9 +5,9 @@ import (
 	"os"
 )
 
-// Config is a type that defines required data for defining slog parameters
+// Config is a type that holds the data required to configure OpenTelemetry.
 type Config struct {
-	AppName string // The name of the app
+	AppName string // The name of the app, sourced from APP_NAME and used as the telemetry service.name
 }
 
 // NewConfig is the function that validates and returns Config instance
@@ -20,13 +20,14 @@ func NewConfig() (*Config, error) {
 	}
 
 	_, OtelServiceNameVarDefined := os.LookupEnv("OTEL_SERVICE_NAME")
+	// APP_NAME is the only accepted source for service.name, so OTEL_SERVICE_NAME must not be set
 
 	if OtelServiceNameVarDefined {
 		return nil, errors.New("env variable \"OTEL_SERVICE_NAME\" cannot be defined. APP_NAME will be use to set that value")
 	}
 
 	_, OtelResourceAttributesVarDefined := os.LookupEnv("OTEL_RESOURCE_ATTRIBUTES")
-	// For the time being this vriable is forbidden, its values will be managed if required
+	// For the time being this variable is forbidden, its values will be managed if required
 
 	if OtelResourceAttributesVarDefined {
 		return nil, errors.New("env variable \"OTEL_RESOURCE_ATTRIBUTES\" cannot be defined for the time being")
