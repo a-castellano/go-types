@@ -22,6 +22,9 @@ test_redis_unit: ## Run redis related tests
 test_slog_unit: ## Run slog related tests
 	@go test --tags=slog_unit_tests -short ./...
 
+test_opentelemetry_unit: ## Run opentelemetry related tests
+	@go test --tags=opentelemetry_unit_tests -short ./...
+
 race: ## Run data race detector
 	@go test --tags=unit_tests -race -short ./...
 
