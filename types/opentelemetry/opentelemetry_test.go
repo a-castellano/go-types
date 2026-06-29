@@ -15,6 +15,7 @@ type envVariable struct {
 
 var envVariables = map[string]envVariable{
 	"appName":                {VariableName: "APP_NAME"},
+	"telemetryEnabled":       {VariableName: "ENABLE_TELEMETRY"},
 	"otelServiceName":        {VariableName: "OTEL_SERVICE_NAME"},
 	"otelResourceAttributes": {VariableName: "OTEL_RESOURCE_ATTRIBUTES"},
 }
@@ -107,6 +108,8 @@ func TestOpenTelemetryConfigWithAppNameAndOtelResourceAttributesVariable(t *test
 	}
 }
 
+// TestOpenTelemetryConfig covers the happy path with only APP_NAME set: NewConfig
+// succeeds and, since ENABLE_TELEMETRY is unset, telemetry defaults to disabled.
 func TestOpenTelemetryConfig(t *testing.T) {
 
 	setUp()
@@ -123,6 +126,54 @@ func TestOpenTelemetryConfig(t *testing.T) {
 		if config.AppName != expectedAppName {
 			t.Fatalf("Expected app name '%s' but got '%s'", expectedAppName, config.AppName)
 		}
+		if config.Enabled {
 
+			t.Errorf("TestOpenTelemetryConfig should come with opentelemetry disabled")
+		}
+	}
+}
+
+// TestOpenTelemetryEnabledFail covers an invalid ENABLE_TELEMETRY value: only
+// "true" or "false" are accepted, anything else must make NewConfig fail.
+func TestOpenTelemetryEnabledFail(t *testing.T) {
+
+	setUp()
+	defer teardown()
+
+	os.Setenv(envVariables["appName"].VariableName, "MyApp")
+	os.Setenv(envVariables["telemetryEnabled"].VariableName, "fail")
+
+	_, err := NewConfig()
+	if err == nil {
+		t.Errorf("NewConfig method with invalid value for \"ENABLE_TELEMETRY\" env variable should fail")
+	} else {
+		expectedError := "env variable \"ENABLE_TELEMETRY\" valid values are only true or false"
+		if err.Error() != expectedError {
+			t.Fatalf("Expected error '%s' but got '%s'", expectedError, err.Error())
+		}
+
+	}
+
+}
+
+// TestOpenTelemetryEnabledConfig covers ENABLE_TELEMETRY set to "true": the flag
+// is the single source of truth and Enabled must reflect it.
+func TestOpenTelemetryEnabledConfig(t *testing.T) {
+
+	setUp()
+	defer teardown()
+
+	os.Setenv(envVariables["appName"].VariableName, "MyApp")
+	os.Setenv(envVariables["telemetryEnabled"].VariableName, "true")
+
+	config, err := NewConfig()
+
+	if err != nil {
+		t.Errorf("TestOpenTelemetryEnabledConfig should not fail")
+	} else {
+		if !config.Enabled {
+
+			t.Errorf("TestOpenTelemetryEnabledConfig should come with opentelemetry enabled")
+		}
 	}
 }
