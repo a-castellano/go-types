@@ -8,6 +8,7 @@ import (
 // Config is a type that holds the data required to configure OpenTelemetry.
 type Config struct {
 	AppName string // The name of the app, sourced from APP_NAME and used as the telemetry service.name
+	Enabled bool
 }
 
 // NewConfig is the function that validates and returns Config instance
@@ -33,5 +34,12 @@ func NewConfig() (*Config, error) {
 		return nil, errors.New("env variable \"OTEL_RESOURCE_ATTRIBUTES\" cannot be defined for the time being")
 	}
 
+	enableFlagValue, enableFlagDefined := os.LookupEnv("ENABLE_TELEMETRY")
+	if enableFlagDefined {
+		if enableFlagValue != "true" && enableFlagValue != "false" {
+			return nil, errors.New("env variable \"ENABLE_TELEMETRY\" valid values are only true or false")
+		}
+		config.Enabled = enableFlagValue == "true"
+	}
 	return &config, nil
 }
