@@ -16,6 +16,7 @@ The aim of this repo is to save time and repeated code by unifying them in one s
 - [redis](/types/redis): Redis config management
 - [slog](/types/slog): slog logger config management
 - [opentelemetry](/types/opentelemetry): opentelemetry config management
+- [envelope](/types/envelope): message envelope carrying trace context and payload for distributed tracing
 
 # Local development
 
