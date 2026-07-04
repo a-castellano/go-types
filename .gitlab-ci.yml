@@ -17,8 +17,8 @@ lint_code:
   script:
     - make lint
 
-race_detector:
-  stage: unit_tests
+race_detector_by_type:
+  stage: unit_tests_by_type
   before_script:
     - export CC=/usr/bin/clang
   script:
@@ -96,6 +96,19 @@ unit_tests:
     - export CC=/usr/bin/clang
   script:
     - make test
+
+race_detector:
+  stage: unit_tests
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_BRANCH == 'master'
+    - if: $CI_COMMIT_BRANCH == 'main'
+    - if: $CI_COMMIT_BRANCH == 'develop'
+    - if: $CI_COMMIT_BRANCH =~ '/^.*all.*$/'
+  before_script:
+    - export CC=/usr/bin/clang
+  script:
+    - make race
 
 coverage:
   stage: coverage
