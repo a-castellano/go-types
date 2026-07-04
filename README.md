@@ -17,6 +17,7 @@ The aim of this repo is to save time and repeated code by unifying them in one s
 - [slog](/types/slog): slog logger config management
 - [opentelemetry](/types/opentelemetry): opentelemetry config management
 - [envelope](/types/envelope): message envelope carrying trace context and payload for distributed tracing
+- [smtp](/types/smtp): SMTP server connection config management
 
 # Local development
 

@@ -66,7 +66,7 @@ func TestConfigWithoutEnvVariables(t *testing.T) {
 		t.Fatalf("TestConfigWithoutEnvVariables should fail.")
 	}
 
-	expectedError := "env variable \"SMTP_FROM\" must be set, cannot load smtp config instead"
+	expectedError := "env variable \"SMTP_FROM\" must be set, cannot load smtp config"
 
 	if err.Error() != expectedError {
 		t.Fatalf("TestConfigWithoutEnvVariables error should be \"%s\" but it was \"%s\".", expectedError, err.Error())
@@ -94,6 +94,32 @@ func TestConfigWithInvalidSMTPPort(t *testing.T) {
 	expectedError := "failed to parse \"SMTP_PORT\" value"
 	if err.Error() != expectedError {
 		t.Errorf("TestConfigWithInvalidSMTPPort error should be \"%s\" but it was \"%s\".", expectedError, err.Error())
+	}
+}
+
+// TestConfigWithOutOfRangePort checks that ports outside the 1-65535 range
+// are rejected even when they parse as integers.
+// This test was written by an AI agent (Claude).
+func TestConfigWithOutOfRangePort(t *testing.T) {
+
+	setUp()
+	defer teardown()
+
+	os.Setenv("SMTP_FROM", "test")
+	os.Setenv("SMTP_DOMAIN", "test")
+	os.Setenv("SMTP_HOST", "test")
+	os.Setenv("SMTP_PORT", "99999")
+	os.Setenv("SMTP_USERNAME", "test")
+	os.Setenv("SMTP_PASSWORD", "test")
+
+	_, err := NewConfig()
+
+	if err == nil {
+		t.Fatalf("TestConfigWithOutOfRangePort should fail.")
+	}
+	expectedError := "SMTP port value must be between 1 and 65535"
+	if err.Error() != expectedError {
+		t.Errorf("TestConfigWithOutOfRangePort error should be \"%s\" but it was \"%s\".", expectedError, err.Error())
 	}
 }
 

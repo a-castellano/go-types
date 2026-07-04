@@ -9,6 +9,7 @@ import (
 	"strconv"
 )
 
+// Config is a type that defines required data for connecting to a SMTP server
 type Config struct {
 	from        string // Sender email username (without domain)
 	domain      string // Sender email domain
@@ -19,6 +20,7 @@ type Config struct {
 	validateTLS bool   // Whether to validate TLS certificates
 }
 
+// NewConfig is the function that validates and returns Config instance
 func NewConfig() (*Config, error) {
 	config := Config{}
 
@@ -27,7 +29,7 @@ func NewConfig() (*Config, error) {
 
 	for _, requiredEnvVariable := range requiredEnvVariables {
 		if _, envVariableFound := os.LookupEnv(requiredEnvVariable); !envVariableFound {
-			errorString := fmt.Sprintf("env variable \"%s\" must be set, cannot load smtp config instead", requiredEnvVariable)
+			errorString := fmt.Sprintf("env variable \"%s\" must be set, cannot load smtp config", requiredEnvVariable)
 			return nil, errors.New(errorString)
 		}
 	}
@@ -37,6 +39,10 @@ func NewConfig() (*Config, error) {
 
 	if portAtoiError != nil {
 		return nil, errors.New("failed to parse \"SMTP_PORT\" value")
+	}
+
+	if port <= 0 || port >= 65536 {
+		return nil, errors.New("SMTP port value must be between 1 and 65535")
 	}
 
 	config.port = port
@@ -54,13 +60,16 @@ func NewConfig() (*Config, error) {
 	return &config, nil
 }
 
+// LogValue allows to log Config masking password value
 func (config Config) LogValue() slog.Value {
 	attrs := []slog.Attr{
 		slog.String("from", config.from),
 		slog.String("domain", config.domain),
 		slog.String("host", config.host),
+		slog.Int("port", config.port),
 		slog.String("user", config.username),
 		slog.String("password", "*****"),
+		slog.Bool("validate_tls", config.validateTLS),
 	}
 
 	return slog.GroupValue(attrs...)
