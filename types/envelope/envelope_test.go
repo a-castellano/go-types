@@ -3,6 +3,7 @@
 package envelope
 
 import (
+	"bytes"
 	"encoding/json"
 	"maps"
 	"testing"
@@ -73,5 +74,30 @@ func TestMarshalUnmarshal(t *testing.T) {
 	if !maps.Equal(carrier, receivedEnvelope.Carrier) {
 		t.Fatalf("carrier should not change after marshal unmarshal operation")
 
+	}
+}
+
+func TestMarshalUnmarshalNilCarrier(t *testing.T) {
+
+	// Telemetry disabled: the producer builds an envelope with no carrier, only the body.
+	body := []byte("payload with no trace context")
+	envelope := Envelope{Carrier: nil, Body: body}
+
+	marshaledEnvelope, err := envelope.Marshal()
+	if err != nil {
+		t.Fatalf("TestMarshalUnmarshalNilCarrier should not fail when marshaledEnvelope is generated, error was '%s'", err.Error())
+	}
+
+	receivedEnvelope, err := Unmarshal(marshaledEnvelope)
+	if err != nil {
+		t.Fatalf("TestMarshalUnmarshalNilCarrier should not fail when envelope is unmashaled again, error was '%s'", err.Error())
+	}
+
+	if !bytes.Equal(body, receivedEnvelope.Body) {
+		t.Fatalf("body should not change after marshal unmarshal operation")
+	}
+
+	if len(receivedEnvelope.Carrier) != 0 {
+		t.Fatalf("carrier should stay empty after round-trip when telemetry is disabled")
 	}
 }
