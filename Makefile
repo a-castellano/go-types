@@ -3,7 +3,7 @@ PKG := "github.com/a-castellano/$(PROJECT_NAME)"
 PKG_LIST := $(shell go list ${PKG}/... | grep -v /vendor/)
 GO_FILES := $(shell find . -name '*.go' | grep -v /vendor/ | grep -v _test.go)
 
-.PHONY: all build clean test test_rabbitmq_unit test_redis_unit test_slog_unit coverage coverhtml lint race msan help
+.PHONY: all build clean test test_rabbitmq_unit test_redis_unit test_slog_unit test_envelope_unit coverage coverhtml lint race msan help
 
 all: build
 
@@ -21,6 +21,9 @@ test_redis_unit: ## Run redis related tests
 
 test_slog_unit: ## Run slog related tests
 	@go test --tags=slog_unit_tests -short ./...
+
+test_envelope_unit: ## Run envelope related tests
+	@go test --tags=envelope_unit_tests -short ./...
 
 test_opentelemetry_unit: ## Run opentelemetry related tests
 	@go test --tags=opentelemetry_unit_tests -short ./...
