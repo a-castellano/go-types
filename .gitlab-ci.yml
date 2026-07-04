@@ -2,6 +2,7 @@ image: harbor.windmaker.net/limani/base_golang_1_26
 
 stages:
   - lint
+  - unit_tests_by_type
   - unit_tests
   - coverage
   - report
@@ -24,12 +25,8 @@ race_detector:
     - make race
 
 rabbitmq_unit_tests:
-  stage: unit_tests
+  stage: unit_tests_by_type
   rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-    - if: $CI_COMMIT_BRANCH == 'master'
-    - if: $CI_COMMIT_BRANCH == 'main'
-    - if: $CI_COMMIT_BRANCH == 'develop'
     - if: $CI_COMMIT_BRANCH =~ '/^.*rabbitmq.*$/'
     - if: $CI_COMMIT_BRANCH =~ '/^.*all.*$/'
   before_script:
@@ -38,12 +35,8 @@ rabbitmq_unit_tests:
     - make test_rabbitmq_unit
 
 redis_unit_tests:
-  stage: unit_tests
+  stage: unit_tests_by_type
   rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-    - if: $CI_COMMIT_BRANCH == 'master'
-    - if: $CI_COMMIT_BRANCH == 'main'
-    - if: $CI_COMMIT_BRANCH == 'develop'
     - if: $CI_COMMIT_BRANCH =~ '/^.*redis.*$/'
     - if: $CI_COMMIT_BRANCH =~ '/^.*all.*$/'
   before_script:
@@ -52,12 +45,8 @@ redis_unit_tests:
     - make test_redis_unit
 
 slog_unit_tests:
-  stage: unit_tests
+  stage: unit_tests_by_type
   rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-    - if: $CI_COMMIT_BRANCH == 'master'
-    - if: $CI_COMMIT_BRANCH == 'main'
-    - if: $CI_COMMIT_BRANCH == 'develop'
     - if: $CI_COMMIT_BRANCH =~ '/^.*slog.*$/'
     - if: $CI_COMMIT_BRANCH =~ '/^.*all.*$/'
   before_script:
@@ -66,12 +55,8 @@ slog_unit_tests:
     - make test_slog_unit
 
 opentelemetry_unit_tests:
-  stage: unit_tests
+  stage: unit_tests_by_type
   rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-    - if: $CI_COMMIT_BRANCH == 'master'
-    - if: $CI_COMMIT_BRANCH == 'main'
-    - if: $CI_COMMIT_BRANCH == 'develop'
     - if: $CI_COMMIT_BRANCH =~ '/^.*opentelemetry.*$/'
     - if: $CI_COMMIT_BRANCH =~ '/^.*all.*$/'
   before_script:
@@ -80,12 +65,8 @@ opentelemetry_unit_tests:
     - make test_opentelemetry_unit
 
 envelope_unit_tests:
-  stage: unit_tests
+  stage: unit_tests_by_type
   rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-    - if: $CI_COMMIT_BRANCH == 'master'
-    - if: $CI_COMMIT_BRANCH == 'main'
-    - if: $CI_COMMIT_BRANCH == 'develop'
     - if: $CI_COMMIT_BRANCH =~ '/^.*envelope.*$/'
     - if: $CI_COMMIT_BRANCH =~ '/^.*all.*$/'
   before_script:
@@ -94,18 +75,27 @@ envelope_unit_tests:
     - make test_envelope_unit
 
 smtp_unit_tests:
-  stage: unit_tests
+  stage: unit_tests_by_type
   rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-    - if: $CI_COMMIT_BRANCH == 'master'
-    - if: $CI_COMMIT_BRANCH == 'main'
-    - if: $CI_COMMIT_BRANCH == 'develop'
     - if: $CI_COMMIT_BRANCH =~ '/^.*smtp.*$/'
     - if: $CI_COMMIT_BRANCH =~ '/^.*all.*$/'
   before_script:
     - export CC=/usr/bin/clang
   script:
     - make test_smtp_unit
+
+unit_tests:
+  stage: unit_tests
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_BRANCH == 'master'
+    - if: $CI_COMMIT_BRANCH == 'main'
+    - if: $CI_COMMIT_BRANCH == 'develop'
+    - if: $CI_COMMIT_BRANCH =~ '/^.*all.*$/'
+  before_script:
+    - export CC=/usr/bin/clang
+  script:
+    - make test
 
 coverage:
   stage: coverage
