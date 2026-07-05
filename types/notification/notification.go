@@ -39,11 +39,11 @@ func WithLevel(level Level) Option {
 func NewNotification(destination string, message string, opts ...Option) (Notification, error) {
 
 	if destination == "" {
-		return Notification{}, fmt.Errorf("%w: %s", ErrEmptyProperty, "destination")
+		return Notification{}, fmt.Errorf("%w: destination", ErrEmptyProperty)
 	}
 
 	if message == "" {
-		return Notification{}, fmt.Errorf("%w: %s", ErrEmptyProperty, "message")
+		return Notification{}, fmt.Errorf("%w: message", ErrEmptyProperty)
 	}
 
 	notification := Notification{
