@@ -3,6 +3,9 @@
 package notification
 
 import (
+	"bytes"
+	"encoding/json"
+	"log/slog"
 	"testing"
 )
 
@@ -57,7 +60,7 @@ func TestNotification(t *testing.T) {
 	message := "some message"
 	level := Warning
 
-	notification, err := NewNotification(destination, message, WithLevel(Warning))
+	notification, err := NewNotification(destination, message, WithLevel(level))
 
 	if err != nil {
 		t.Fatalf("TestNotification should not fail with valid parameters, error was \"%s\"", err.Error())
@@ -73,4 +76,38 @@ func TestNotification(t *testing.T) {
 		t.Fatalf("notification level should be \"%d\" instead of \"%d\"", level, notification.Level())
 	}
 
+}
+
+func TestLogValue(t *testing.T) {
+
+	destination := "toSomeone"
+	message := "some message"
+	level := Warning
+
+	notification, err := NewNotification(destination, message, WithLevel(level))
+
+	if err != nil {
+		t.Fatalf("TestNotification should not fail with valid parameters, error was \"%s\"", err.Error())
+	}
+	var buf bytes.Buffer
+	logger := slog.New(slog.NewJSONHandler(&buf, nil))
+
+	logger.Info("test log", "notification", notification)
+
+	bufferLen := buf.Len()
+
+	if bufferLen <= 0 {
+		t.Fatalf("TestLogValue has failed, buffer is empty")
+	}
+
+	var loggedData map[string]interface{}
+	if err := json.Unmarshal(buf.Bytes(), &loggedData); err != nil {
+		t.Fatalf("TestLogValue has failed, cannot unmarshal json log")
+	}
+
+	smtpConfig := loggedData["notification"].(map[string]interface{})
+	destinationValue := smtpConfig["destination"].(string)
+	if destinationValue != destination {
+		t.Fatalf("TestLogValue has failed, destination should be \"%s\" but it was \"%s\"", destination, destinationValue)
+	}
 }

@@ -3,6 +3,7 @@ package notification
 import (
 	"errors"
 	"fmt"
+	"log/slog"
 )
 
 // Level represents the severity of a Notification.
@@ -94,4 +95,11 @@ func (notification *Notification) Message() string {
 // Level returns the notification severity level.
 func (notification *Notification) Level() Level {
 	return notification.level
+}
+
+func (notification Notification) LogValue() slog.Value {
+	return slog.GroupValue(
+		slog.String("destination", notification.destination),
+		slog.Int("level", int(notification.level)),
+	)
 }
