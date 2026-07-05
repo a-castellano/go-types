@@ -28,6 +28,9 @@ test_envelope_unit: ## Run envelope related tests
 test_smtp_unit: ## Run smtp related tests
 	@go test --tags=smtp_unit_tests -short ./...
 
+test_notification_unit: ## Run notification related tests
+	@go test --tags=notification_unit_tests -short ./...
+
 test_opentelemetry_unit: ## Run opentelemetry related tests
 	@go test --tags=opentelemetry_unit_tests -short ./...
 
