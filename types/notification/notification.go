@@ -97,11 +97,24 @@ func (notification *Notification) Level() Level {
 	return notification.level
 }
 
+// String makes Level implement fmt.Stringer, so levels are rendered by
+// name instead of as raw integers.
+func (level Level) String() string {
+	switch level {
+	case Warning:
+		return "warning"
+	case Error:
+		return "error"
+	default:
+		return "info" // value is checked in constructor
+	}
+}
+
 // LogValue allows to log Notification omitting the message content: only the
 // destination and the severity level are logged.
 func (notification Notification) LogValue() slog.Value {
 	return slog.GroupValue(
-		slog.String("destination", notification.destination),
-		slog.Int("level", int(notification.level)),
+		slog.String("destination", notification.Destination()),
+		slog.String("level", notification.Level().String()),
 	)
 }

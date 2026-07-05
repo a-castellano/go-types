@@ -110,4 +110,22 @@ func TestLogValue(t *testing.T) {
 	if destinationValue != destination {
 		t.Fatalf("TestLogValue has failed, destination should be \"%s\" but it was \"%s\"", destination, destinationValue)
 	}
+	levelValue := smtpConfig["level"].(string)
+	if levelValue != level.String() {
+		t.Fatalf("TestLogValue has failed, level should be \"%s\" but it was \"%s\"", level.String(), levelValue)
+	}
+
+}
+
+func TestLevelStringer(t *testing.T) {
+	if Info.String() != "info" {
+		t.Fatalf("Info level string should be \"info\" but it was \"%s\"", Info.String())
+	}
+	if Warning.String() != "warning" {
+		t.Fatalf("Warning level string should be \"warning\" but it was \"%s\"", Warning.String())
+	}
+	if Error.String() != "error" {
+		t.Fatalf("Error level string should be \"error\" but it was \"%s\"", Error.String())
+	}
+
 }
