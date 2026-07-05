@@ -2,7 +2,11 @@
 
 ## Formatting
 
-Never use bold text (neither in chat replies nor in generated documentation) unless the developer explicitly asks for it. Default LLM bolding is unwanted here. Use plain prose, headings, lists, and code spans to structure content instead.
+Bold may be used to highlight key concepts when it genuinely aids readability — for example, the first mention of an important term or a name being introduced. Do not bold gratuitously: avoid the default LLM habit of bolding whole phrases or every other sentence, and never use bold as a substitute for structure. Prefer `code spans` for identifiers, variable names, types, file names and commands; reserve bold for conceptual emphasis. Use plain prose, headings, lists, and code spans as the primary way to structure content.
+
+## Code Reviews: Skip Cosmetic Formatting
+
+When auditing code, do not report purely cosmetic formatting issues (blank lines, spacing, import grouping/ordering, redundant import aliases and similar): the developer's editor auto-formats on save and takes care of them. Focus reviews on correctness, design, idioms and naming — things a formatter cannot fix.
 
 ## Primary Role: Auditor, Not Code Generator
 
@@ -42,9 +46,34 @@ podman compose -f development/docker-compose.yml exec golang make test
 podman compose -f development/docker-compose.yml exec golang go vet ./...
 ```
 
-The Go module cache persists in `development/gomodcache/` (git-ignored), so dependencies are not re-downloaded each run.
+The Go module cache persists in `development/.gomodcache/` (git-ignored), so dependencies are not re-downloaded each run. The dot prefix is deliberate: Go package patterns (`./...`) skip dot-directories, so the in-tree cache is never walked by `go test`, `go get` or `go mod tidy`.
 
 ## Exceptions (when explicitly requested)
 
 - Documentation and comments: you may be asked to review existing docs or generate documentation and inline code comments.
 - Code generation: occasionally the developer will ask you to generate specific code. Do so only when directly requested.
+
+## Attribution of AI-written tests
+
+Every test that Claude writes (or substantially rewrites) must carry a comment stating it was written by an AI agent, so it is always distinguishable from the tests the developer wrote by hand to learn. Add a line like `// This test was written by an AI agent (Claude).` to the test's doc comment. If Claude only extends a hand-written test, the comment must say which part was AI-written instead of claiming the whole test.
+
+## OpenTelemetry: Span Error Recording Policy
+
+This policy applies across all my projects (this file is replicated in each one).
+
+The error *event* (`span.RecordError`) is recorded exactly once, in the span closest to where the error happens: the deepest instrumented span, or the current span when the failing call has no span of its own. Every ancestor span up the chain marks `span.SetStatus(codes.Error, ...)` only — the whole branch shows as failed in the trace without duplicating the same event at every level.
+
+When auditing instrumentation, enforce the policy in both directions:
+
+- Flag a `RecordError` on an error that an instrumented callee already records (duplicate event).
+- Flag a status-only error path whose callee has no instrumented span (red span with no event explaining it).
+
+Deciding which case applies usually requires reading the callee's code, not assuming. These projects share the `go-types`/`go-services` libraries (`github.com/a-castellano/...`): when the failing call crosses into them, check the library source — cloned as sibling directories of this project, or in the module cache — to confirm whether its spans record the error at that path.
+
+## OpenTelemetry: Span Attributes at Start
+
+This convention applies across all my projects (this file is replicated in each one).
+
+Attributes whose values are known when the span is created are declared in the single `Start` call, via `trace.WithAttributes(...)` — not in a separate `span.SetAttributes` immediately after. Besides reading better, start-time attributes are visible to samplers deciding whether to keep the trace; attributes added afterwards are not.
+
+`span.SetAttributes` remains the right tool for values only known mid-flow (outcomes, flags computed during the operation). When auditing, flag a `SetAttributes` right after `Start` whose values were already available at creation time.
