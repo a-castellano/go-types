@@ -3,6 +3,9 @@
 package notification
 
 import (
+	"bytes"
+	"encoding/json"
+	"log/slog"
 	"testing"
 )
 
@@ -44,7 +47,7 @@ func TestNotificationWithInvalidLevel(t *testing.T) {
 		t.Fatalf("TestNotificationWithInvalidLevel should fail.")
 	}
 
-	expectedError := "invalid notification level: 2000"
+	expectedError := "invalid notification level: unknown(2000)"
 
 	if err.Error() != expectedError {
 		t.Fatalf("TestNotificationWithInvalidLevel error should be \"%s\" but it was \"%s\".", expectedError, err.Error())
@@ -57,7 +60,7 @@ func TestNotification(t *testing.T) {
 	message := "some message"
 	level := Warning
 
-	notification, err := NewNotification(destination, message, WithLevel(Warning))
+	notification, err := NewNotification(destination, message, WithLevel(level))
 
 	if err != nil {
 		t.Fatalf("TestNotification should not fail with valid parameters, error was \"%s\"", err.Error())
@@ -71,6 +74,58 @@ func TestNotification(t *testing.T) {
 	}
 	if notification.Level() != level {
 		t.Fatalf("notification level should be \"%d\" instead of \"%d\"", level, notification.Level())
+	}
+
+}
+
+func TestLogValue(t *testing.T) {
+
+	destination := "toSomeone"
+	message := "some message"
+	level := Warning
+
+	notification, err := NewNotification(destination, message, WithLevel(level))
+
+	if err != nil {
+		t.Fatalf("TestNotification should not fail with valid parameters, error was \"%s\"", err.Error())
+	}
+	var buf bytes.Buffer
+	logger := slog.New(slog.NewJSONHandler(&buf, nil))
+
+	logger.Info("test log", "notification", notification)
+
+	bufferLen := buf.Len()
+
+	if bufferLen <= 0 {
+		t.Fatalf("TestLogValue has failed, buffer is empty")
+	}
+
+	var loggedData map[string]interface{}
+	if err := json.Unmarshal(buf.Bytes(), &loggedData); err != nil {
+		t.Fatalf("TestLogValue has failed, cannot unmarshal json log")
+	}
+
+	loggedNotification := loggedData["notification"].(map[string]interface{})
+	destinationValue := loggedNotification["destination"].(string)
+	if destinationValue != destination {
+		t.Fatalf("TestLogValue has failed, destination should be \"%s\" but it was \"%s\"", destination, destinationValue)
+	}
+	levelValue := loggedNotification["level"].(string)
+	if levelValue != level.String() {
+		t.Fatalf("TestLogValue has failed, level should be \"%s\" but it was \"%s\"", level.String(), levelValue)
+	}
+
+}
+
+func TestLevelStringer(t *testing.T) {
+	if Info.String() != "info" {
+		t.Fatalf("Info level string should be \"info\" but it was \"%s\"", Info.String())
+	}
+	if Warning.String() != "warning" {
+		t.Fatalf("Warning level string should be \"warning\" but it was \"%s\"", Warning.String())
+	}
+	if Error.String() != "error" {
+		t.Fatalf("Error level string should be \"error\" but it was \"%s\"", Error.String())
 	}
 
 }

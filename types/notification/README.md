@@ -17,12 +17,28 @@ The level is optional and set through the `WithLevel` functional option. The ava
 
 `WithLevel` rejects values outside the defined levels, so a `Notification` can never hold an invalid level.
 
+`Level` implements `fmt.Stringer`, so levels are rendered by name (`info`, `warning`, `error`) in logs and anywhere else they are formatted.
+
 ## Errors
 
 The constructor returns sentinel errors that can be detected with `errors.Is`:
 
 * `ErrEmptyProperty` when destination or message is empty; the error message names the offending property
 * `ErrInvalidLevel` when the level passed to `WithLevel` is not one of the defined levels
+
+## Logging
+
+`Notification` implements `slog.LogValuer`, so it can be passed directly to any `log/slog` logger. The message content is omitted: only the destination and the severity level are logged.
+
+```go
+notification, err := notification.NewNotification("ops-team", "disk almost full", notification.WithLevel(notification.Warning))
+if err != nil {
+    log.Fatal(err)
+}
+
+slog.Info("notification created", "notification", notification)
+// Output: destination=ops-team level=warning
+```
 
 ## Usage
 
