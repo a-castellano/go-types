@@ -24,6 +24,20 @@ The constructor returns sentinel errors that can be detected with `errors.Is`:
 * `ErrEmptyProperty` when destination or message is empty; the error message names the offending property
 * `ErrInvalidLevel` when the level passed to `WithLevel` is not one of the defined levels
 
+## Logging
+
+`Notification` implements `slog.LogValuer`, so it can be passed directly to any `log/slog` logger. The message content is omitted: only the destination and the severity level are logged.
+
+```go
+notification, err := notification.NewNotification("ops-team", "disk almost full", notification.WithLevel(notification.Warning))
+if err != nil {
+    log.Fatal(err)
+}
+
+slog.Info("notification created", "notification", notification)
+// Output: destination=ops-team level=1
+```
+
 ## Usage
 
 ```go

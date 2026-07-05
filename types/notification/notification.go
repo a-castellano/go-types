@@ -97,6 +97,8 @@ func (notification *Notification) Level() Level {
 	return notification.level
 }
 
+// LogValue allows to log Notification omitting the message content: only the
+// destination and the severity level are logged.
 func (notification Notification) LogValue() slog.Value {
 	return slog.GroupValue(
 		slog.String("destination", notification.destination),
