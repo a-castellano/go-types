@@ -47,7 +47,7 @@ func TestNotificationWithInvalidLevel(t *testing.T) {
 		t.Fatalf("TestNotificationWithInvalidLevel should fail.")
 	}
 
-	expectedError := "invalid notification level: 2000"
+	expectedError := "invalid notification level: unknown(2000)"
 
 	if err.Error() != expectedError {
 		t.Fatalf("TestNotificationWithInvalidLevel error should be \"%s\" but it was \"%s\".", expectedError, err.Error())
@@ -105,12 +105,12 @@ func TestLogValue(t *testing.T) {
 		t.Fatalf("TestLogValue has failed, cannot unmarshal json log")
 	}
 
-	smtpConfig := loggedData["notification"].(map[string]interface{})
-	destinationValue := smtpConfig["destination"].(string)
+	loggedNotification := loggedData["notification"].(map[string]interface{})
+	destinationValue := loggedNotification["destination"].(string)
 	if destinationValue != destination {
 		t.Fatalf("TestLogValue has failed, destination should be \"%s\" but it was \"%s\"", destination, destinationValue)
 	}
-	levelValue := smtpConfig["level"].(string)
+	levelValue := loggedNotification["level"].(string)
 	if levelValue != level.String() {
 		t.Fatalf("TestLogValue has failed, level should be \"%s\" but it was \"%s\"", level.String(), levelValue)
 	}

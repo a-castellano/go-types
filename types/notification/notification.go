@@ -48,7 +48,7 @@ type Option func(*Notification) error
 func WithLevel(level Level) Option {
 	return func(notification *Notification) error {
 		if level < Info || level >= levelSentinel {
-			return fmt.Errorf("%w: %d", ErrInvalidLevel, level)
+			return fmt.Errorf("%w: %s", ErrInvalidLevel, level.String())
 		}
 		notification.level = level
 		return nil
@@ -101,12 +101,14 @@ func (notification *Notification) Level() Level {
 // name instead of as raw integers.
 func (level Level) String() string {
 	switch level {
+	case Info:
+		return "info"
 	case Warning:
 		return "warning"
 	case Error:
 		return "error"
 	default:
-		return "info" // value is checked in constructor
+		return fmt.Sprintf("unknown(%d)", int(level))
 	}
 }
 

@@ -17,6 +17,8 @@ The level is optional and set through the `WithLevel` functional option. The ava
 
 `WithLevel` rejects values outside the defined levels, so a `Notification` can never hold an invalid level.
 
+`Level` implements `fmt.Stringer`, so levels are rendered by name (`info`, `warning`, `error`) in logs and anywhere else they are formatted.
+
 ## Errors
 
 The constructor returns sentinel errors that can be detected with `errors.Is`:
@@ -35,7 +37,7 @@ if err != nil {
 }
 
 slog.Info("notification created", "notification", notification)
-// Output: destination=ops-team level=1
+// Output: destination=ops-team level=warning
 ```
 
 ## Usage
