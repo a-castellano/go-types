@@ -3,6 +3,7 @@ package notification
 import (
 	"errors"
 	"fmt"
+	"log/slog"
 )
 
 // Level represents the severity of a Notification.
@@ -47,7 +48,7 @@ type Option func(*Notification) error
 func WithLevel(level Level) Option {
 	return func(notification *Notification) error {
 		if level < Info || level >= levelSentinel {
-			return fmt.Errorf("%w: %d", ErrInvalidLevel, level)
+			return fmt.Errorf("%w: %s", ErrInvalidLevel, level.String())
 		}
 		notification.level = level
 		return nil
@@ -94,4 +95,28 @@ func (notification *Notification) Message() string {
 // Level returns the notification severity level.
 func (notification *Notification) Level() Level {
 	return notification.level
+}
+
+// String makes Level implement fmt.Stringer, so levels are rendered by
+// name instead of as raw integers.
+func (level Level) String() string {
+	switch level {
+	case Info:
+		return "info"
+	case Warning:
+		return "warning"
+	case Error:
+		return "error"
+	default:
+		return fmt.Sprintf("unknown(%d)", int(level))
+	}
+}
+
+// LogValue allows to log Notification omitting the message content: only the
+// destination and the severity level are logged.
+func (notification Notification) LogValue() slog.Value {
+	return slog.GroupValue(
+		slog.String("destination", notification.Destination()),
+		slog.String("level", notification.Level().String()),
+	)
 }
