@@ -58,7 +58,7 @@ func NewConfig() (*Config, error) {
 func (config Config) LogValue() slog.Value {
 	connectionURL := url.URL{
 		Scheme: "amqp",
-		User:   url.UserPassword(config.user, "...."),
+		User:   url.UserPassword(config.user, "xxxxx"),
 		Host:   config.host + ":" + strconv.Itoa(config.port),
 		Path:   "/",
 	}

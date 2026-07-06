@@ -236,7 +236,7 @@ func TestLogValue(t *testing.T) {
 			} else {
 				rabbitmqConfig := loggedData["rabbitmq config"].(map[string]interface{})
 				urlValue := rabbitmqConfig["url"].(string)
-				expectedValue := "amqp://user:....@127.0.0.1:1123/"
+				expectedValue := "amqp://user:xxxxx@127.0.0.1:1123/"
 				if urlValue != expectedValue {
 					t.Errorf("TestLogValue has failed, message should be \"%s\" but it was \"%s\"", expectedValue, urlValue)
 				}
