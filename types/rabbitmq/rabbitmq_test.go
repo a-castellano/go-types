@@ -235,9 +235,10 @@ func TestLogValue(t *testing.T) {
 				t.Errorf("TestLogValue has failed, cannot unmarshal json log")
 			} else {
 				rabbitmqConfig := loggedData["rabbitmq config"].(map[string]interface{})
-				passwordValue := rabbitmqConfig["password"].(string)
-				if passwordValue != "*****" {
-					t.Errorf("TestLogValue has failed, message should be \"REDACTED\" but it was \"%s\"", passwordValue)
+				urlValue := rabbitmqConfig["url"].(string)
+				expectedValue := "amqp://user:....@127.0.0.1:1123/"
+				if urlValue != expectedValue {
+					t.Errorf("TestLogValue has failed, message should be \"%s\" but it was \"%s\"", expectedValue, urlValue)
 				}
 			}
 
