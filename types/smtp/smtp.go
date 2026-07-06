@@ -5,16 +5,15 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"net/mail"
 	"os"
 	"strconv"
 )
 
 // Config is a type that defines required data for connecting to a SMTP server
 type Config struct {
-	from        string // Sender email username (without domain)
-	domain      string // Sender email domain
-	host        string // SMTP server hostname
-	port        int    // SMTP server port
+	from        string
+	address     string // SMTP server hostname
 	username    string // SMTP authentication username
 	password    string // SMTP authentication password
 	validateTLS bool   // Whether to validate TLS certificates
@@ -25,7 +24,7 @@ func NewConfig() (*Config, error) {
 	config := Config{}
 
 	// Check if all required environment variables are defined
-	requiredEnvVariables := []string{"SMTP_FROM", "SMTP_DOMAIN", "SMTP_HOST", "SMTP_PORT", "SMTP_USERNAME", "SMTP_PASSWORD"}
+	requiredEnvVariables := []string{"SMTP_FROM", "SMTP_HOST", "SMTP_PORT", "SMTP_USERNAME", "SMTP_PASSWORD"}
 
 	for _, requiredEnvVariable := range requiredEnvVariables {
 		if _, envVariableFound := os.LookupEnv(requiredEnvVariable); !envVariableFound {
@@ -45,12 +44,14 @@ func NewConfig() (*Config, error) {
 		return nil, errors.New("SMTP port value must be between 1 and 65535")
 	}
 
-	config.port = port
+	if _, err := mail.ParseAddress(os.Getenv("SMTP_FROM")); err != nil {
+		return nil, errors.New("\"SMTP_FROM\" is not a valid email address")
+	}
+
+	config.address = fmt.Sprintf("%s:%d", os.Getenv("SMTP_HOST"), port)
 
 	// Load SMTP configuration from environment variables
 	config.from = os.Getenv("SMTP_FROM")
-	config.domain = os.Getenv("SMTP_DOMAIN")
-	config.host = os.Getenv("SMTP_HOST")
 	config.username = os.Getenv("SMTP_USERNAME")
 	config.password = os.Getenv("SMTP_PASSWORD")
 
@@ -60,13 +61,31 @@ func NewConfig() (*Config, error) {
 	return &config, nil
 }
 
+func (config *Config) From() string {
+	return config.from
+}
+
+func (config *Config) Address() string {
+	return config.address
+}
+
+func (config *Config) Username() string {
+	return config.username
+}
+
+func (config *Config) Password() string {
+	return config.password
+}
+
+func (config *Config) ValidateTLS() bool {
+	return config.validateTLS
+}
+
 // LogValue allows to log Config masking password value
 func (config Config) LogValue() slog.Value {
 	attrs := []slog.Attr{
 		slog.String("from", config.from),
-		slog.String("domain", config.domain),
-		slog.String("host", config.host),
-		slog.Int("port", config.port),
+		slog.String("address", config.address),
 		slog.String("user", config.username),
 		slog.String("password", "*****"),
 		slog.Bool("validate_tls", config.validateTLS),

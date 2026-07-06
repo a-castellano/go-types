@@ -4,6 +4,7 @@ import (
 	"cmp"
 	"errors"
 	"log/slog"
+	"net/url"
 	"os"
 	"strconv"
 )
@@ -35,23 +36,34 @@ func NewConfig() (*Config, error) {
 	config.port, portAtoiErr = strconv.Atoi(cmp.Or(os.Getenv("RABBITMQ_PORT"), "5672"))
 
 	if portAtoiErr != nil {
-		return config, portAtoiErr
+		return nil, portAtoiErr
 	}
 
 	if config.port <= 0 || config.port >= 65536 {
-		return config, errors.New("RabbitMQ port value must be between 1 and 65535")
+		return nil, errors.New("RabbitMQ port value must be between 1 and 65535")
 	}
 
-	config.ConnectionString = "amqp://" + config.user + ":" + config.password + "@" + config.host + ":" + strconv.Itoa(config.port) + "/"
+	connectionURL := url.URL{
+		Scheme: "amqp",
+		User:   url.UserPassword(config.user, config.password),
+		Host:   config.host + ":" + strconv.Itoa(config.port),
+		Path:   "/",
+	}
+
+	config.ConnectionString = connectionURL.String()
 	return config, nil
 }
 
-// LogValue allows to log Config masking password value
+// LogValue allows to log conection URL masking password value
 func (config Config) LogValue() slog.Value {
+	connectionURL := url.URL{
+		Scheme: "amqp",
+		User:   url.UserPassword(config.user, "xxxxx"),
+		Host:   config.host + ":" + strconv.Itoa(config.port),
+		Path:   "/",
+	}
+
 	return slog.GroupValue(
-		slog.String("host", config.host),
-		slog.Int("port", config.port),
-		slog.String("user", config.user),
-		slog.String("password", "*****"),
+		slog.String("url", connectionURL.String()),
 	)
 }
