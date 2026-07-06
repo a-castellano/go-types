@@ -18,7 +18,6 @@ type envVariable struct {
 
 var envVariables = map[string]envVariable{
 	"from":        {VariableName: "SMTP_FROM"},
-	"domain":      {VariableName: "SMTP_DOMAIN"},
 	"host":        {VariableName: "SMTP_HOST"},
 	"port":        {VariableName: "SMTP_PORT"},
 	"username":    {VariableName: "SMTP_USERNAME"},
@@ -128,22 +127,38 @@ func TestConfigWithValidConfig(t *testing.T) {
 	setUp()
 	defer teardown()
 
-	os.Setenv("SMTP_FROM", "test")
-	os.Setenv("SMTP_DOMAIN", "test")
+	os.Setenv("SMTP_FROM", "test@example.com")
 	os.Setenv("SMTP_HOST", "test")
 	os.Setenv("SMTP_PORT", "25")
-	os.Setenv("SMTP_USERNAME", "test")
-	os.Setenv("SMTP_PASSWORD", "test")
+	os.Setenv("SMTP_USERNAME", "user")
+	os.Setenv("SMTP_PASSWORD", "pass")
 
 	config, err := NewConfig()
 
 	if err != nil {
 		t.Fatalf("TestConfigWithValidConfig should not fail, error was \"%s\"", err.Error())
 	}
-	if config.port != 25 {
-		t.Fatalf("TestConfigWithValidConfig port should be 25, was \"%d\"", config.port)
+	expectedFrom := "test@example.com"
+	if config.From() != expectedFrom {
+		t.Fatalf("TestConfigWithValidConfig from should be \"%s\", was \"%s\"", expectedFrom, config.From())
 	}
-	if !config.validateTLS {
+
+	expectedAddress := "test:25"
+	if config.Address() != expectedAddress {
+		t.Fatalf("TestConfigWithValidConfig address should be \"%s\", was \"%s\"", expectedAddress, config.Address())
+	}
+
+	expectedUser := "user"
+	if config.Username() != expectedUser {
+		t.Fatalf("TestConfigWithValidConfig smtp user should be \"%s\", was \"%s\"", expectedUser, config.Username())
+	}
+
+	expectedPassword := "pass"
+	if config.Password() != expectedPassword {
+		t.Fatalf("TestConfigWithValidConfig smtp password should be \"%s\", was \"%s\"", expectedPassword, config.Password())
+	}
+
+	if !config.ValidateTLS() {
 		t.Fatalf("TestConfigWithValidConfig validateTLS should be true")
 	}
 
@@ -154,8 +169,7 @@ func TestConfigWithValidConfigNotTLSValidation(t *testing.T) {
 	setUp()
 	defer teardown()
 
-	os.Setenv("SMTP_FROM", "test")
-	os.Setenv("SMTP_DOMAIN", "test")
+	os.Setenv("SMTP_FROM", "test@example.com")
 	os.Setenv("SMTP_HOST", "test")
 	os.Setenv("SMTP_PORT", "25")
 	os.Setenv("SMTP_USERNAME", "test")
@@ -173,13 +187,32 @@ func TestConfigWithValidConfigNotTLSValidation(t *testing.T) {
 
 }
 
+func TestConfigInvalidFrom(t *testing.T) {
+
+	setUp()
+	defer teardown()
+
+	os.Setenv("SMTP_FROM", "thisisnotavalidaddress")
+	os.Setenv("SMTP_HOST", "test")
+	os.Setenv("SMTP_PORT", "25")
+	os.Setenv("SMTP_USERNAME", "test")
+	os.Setenv("SMTP_PASSWORD", "test")
+	os.Setenv("SMTP_VALIDATE_TLS", "anyvaluedifferentfromtrue")
+
+	_, err := NewConfig()
+
+	if err == nil {
+		t.Fatalf("TestConfigInvalidFrom should fail")
+	}
+
+}
+
 func TestLogValue(t *testing.T) {
 
 	setUp()
 	defer teardown()
 
-	os.Setenv("SMTP_FROM", "test")
-	os.Setenv("SMTP_DOMAIN", "test")
+	os.Setenv("SMTP_FROM", "test@example.com")
 	os.Setenv("SMTP_HOST", "test")
 	os.Setenv("SMTP_PORT", "25")
 	os.Setenv("SMTP_USERNAME", "test")
