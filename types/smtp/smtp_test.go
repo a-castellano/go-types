@@ -143,6 +143,16 @@ func TestConfigWithValidConfig(t *testing.T) {
 		t.Fatalf("TestConfigWithValidConfig from should be \"%s\", was \"%s\"", expectedFrom, config.From())
 	}
 
+	expectedHost := "test"
+	if config.Host() != expectedHost {
+		t.Fatalf("TestConfigWithValidConfig host should be \"%s\", was \"%s\"", expectedHost, config.Host())
+	}
+
+	expectedPort := 25
+	if config.Port() != expectedPort {
+		t.Fatalf("TestConfigWithValidConfig port should be \"%d\", was \"%d\"", expectedPort, config.Port())
+	}
+
 	expectedAddress := "test:25"
 	if config.Address() != expectedAddress {
 		t.Fatalf("TestConfigWithValidConfig address should be \"%s\", was \"%s\"", expectedAddress, config.Address())

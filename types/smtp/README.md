@@ -17,6 +17,8 @@ config, err := smtp.NewConfig()
 | Method | Returns | Description |
 |---|---|---|
 | `From()` | `string` | Sender email address, from `SMTP_FROM` |
+| `Host()` | `string` | SMTP server hostname, from `SMTP_HOST` |
+| `Port()` | `int` | SMTP server port, from `SMTP_PORT` |
 | `Address()` | `string` | SMTP server address in `host:port` form, built from `SMTP_HOST` and `SMTP_PORT` |
 | `Username()` | `string` | SMTP authentication username |
 | `Password()` | `string` | SMTP authentication password |

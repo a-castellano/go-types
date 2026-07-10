@@ -13,7 +13,8 @@ import (
 // Config is a type that defines required data for connecting to a SMTP server
 type Config struct {
 	from        string
-	address     string // SMTP server hostname
+	host        string // SMTP server domain
+	port        int    // SMTP server port
 	username    string // SMTP authentication username
 	password    string // SMTP authentication password
 	validateTLS bool   // Whether to validate TLS certificates
@@ -42,15 +43,16 @@ func NewConfig() (*Config, error) {
 
 	if port <= 0 || port >= 65536 {
 		return nil, errors.New("SMTP port value must be between 1 and 65535")
+	} else {
+		config.port = port
 	}
 
 	if _, err := mail.ParseAddress(os.Getenv("SMTP_FROM")); err != nil {
 		return nil, errors.New("\"SMTP_FROM\" is not a valid email address")
 	}
 
-	config.address = fmt.Sprintf("%s:%d", os.Getenv("SMTP_HOST"), port)
-
 	// Load SMTP configuration from environment variables
+	config.host = os.Getenv("SMTP_HOST")
 	config.from = os.Getenv("SMTP_FROM")
 	config.username = os.Getenv("SMTP_USERNAME")
 	config.password = os.Getenv("SMTP_PASSWORD")
@@ -61,22 +63,37 @@ func NewConfig() (*Config, error) {
 	return &config, nil
 }
 
+// From returns the sender email address
 func (config *Config) From() string {
 	return config.from
 }
 
-func (config *Config) Address() string {
-	return config.address
+// Host returns the SMTP server hostname
+func (config *Config) Host() string {
+	return config.host
 }
 
+// Port returns the SMTP server port
+func (config *Config) Port() int {
+	return config.port
+}
+
+// Address returns the SMTP server address in "host:port" form
+func (config *Config) Address() string {
+	return fmt.Sprintf("%s:%d", config.host, config.port)
+}
+
+// Username returns the SMTP authentication username
 func (config *Config) Username() string {
 	return config.username
 }
 
+// Password returns the SMTP authentication password
 func (config *Config) Password() string {
 	return config.password
 }
 
+// ValidateTLS returns whether TLS certificates are validated
 func (config *Config) ValidateTLS() bool {
 	return config.validateTLS
 }
@@ -85,7 +102,7 @@ func (config *Config) ValidateTLS() bool {
 func (config Config) LogValue() slog.Value {
 	attrs := []slog.Attr{
 		slog.String("from", config.from),
-		slog.String("address", config.address),
+		slog.String("address", config.Address()),
 		slog.String("user", config.username),
 		slog.String("password", "*****"),
 		slog.Bool("validate_tls", config.validateTLS),
