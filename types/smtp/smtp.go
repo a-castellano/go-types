@@ -63,30 +63,37 @@ func NewConfig() (*Config, error) {
 	return &config, nil
 }
 
+// From returns the sender email address
 func (config *Config) From() string {
 	return config.from
 }
 
+// Host returns the SMTP server hostname
 func (config *Config) Host() string {
 	return config.host
 }
 
+// Port returns the SMTP server port
 func (config *Config) Port() int {
 	return config.port
 }
 
+// Address returns the SMTP server address in "host:port" form
 func (config *Config) Address() string {
 	return fmt.Sprintf("%s:%d", config.host, config.port)
 }
 
+// Username returns the SMTP authentication username
 func (config *Config) Username() string {
 	return config.username
 }
 
+// Password returns the SMTP authentication password
 func (config *Config) Password() string {
 	return config.password
 }
 
+// ValidateTLS returns whether TLS certificates are validated
 func (config *Config) ValidateTLS() bool {
 	return config.validateTLS
 }
