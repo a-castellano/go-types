@@ -6,9 +6,10 @@ Unlike the config types in this repo, `Notification` is not read from environmen
 
 ## Required properties
 
-Both are constructor arguments and cannot be empty:
+All three are constructor arguments and cannot be empty:
 
 * **destination** defines where the notification is delivered
+* **title** defines the notification title, or subject
 * **message** defines the notification content
 
 ## Severity level
@@ -23,39 +24,40 @@ The level is optional and set through the `WithLevel` functional option. The ava
 
 The constructor returns sentinel errors that can be detected with `errors.Is`:
 
-* `ErrEmptyProperty` when destination or message is empty; the error message names the offending property
+* `ErrEmptyProperty` when destination, title or message is empty; the error message names the offending property
 * `ErrInvalidLevel` when the level passed to `WithLevel` is not one of the defined levels
 
 ## Logging
 
-`Notification` implements `slog.LogValuer`, so it can be passed directly to any `log/slog` logger. The message content is omitted: only the destination and the severity level are logged.
+`Notification` implements `slog.LogValuer`, so it can be passed directly to any `log/slog` logger. The message content is omitted: only the destination, the title and the severity level are logged.
 
 ```go
-notification, err := notification.NewNotification("ops-team", "disk almost full", notification.WithLevel(notification.Warning))
+notification, err := notification.NewNotification("ops-team", "Disk alert", "disk almost full", notification.WithLevel(notification.Warning))
 if err != nil {
     log.Fatal(err)
 }
 
 slog.Info("notification created", "notification", notification)
-// Output: destination=ops-team level=warning
+// Output: destination=ops-team title="Disk alert" level=warning
 ```
 
 ## Usage
 
 ```go
 // Default level (Info)
-notification, err := notification.NewNotification("ops-team", "backup completed")
+notification, err := notification.NewNotification("ops-team", "Backup report", "backup completed")
 if err != nil {
     log.Fatal(err)
 }
 
 // Explicit level
-notification, err = notification.NewNotification("ops-team", "disk almost full", notification.WithLevel(notification.Warning))
+notification, err = notification.NewNotification("ops-team", "Disk alert", "disk almost full", notification.WithLevel(notification.Warning))
 if err != nil {
     log.Fatal(err)
 }
 
 notification.Destination() // "ops-team"
+notification.Title()       // "Disk alert"
 notification.Message()     // "disk almost full"
 notification.Level()       // notification.Warning
 ```
