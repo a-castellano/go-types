@@ -57,7 +57,7 @@ func WithLevel(level Level) Option {
 }
 
 // NewNotification is the function that validates and returns Notification
-// instance. Destination and message are required and cannot be empty; the
+// instance. Destination, title and message are required and cannot be empty; the
 // severity level defaults to Info unless WithLevel is passed.
 func NewNotification(destination string, title string, message string, opts ...Option) (Notification, error) {
 
