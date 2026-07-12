@@ -35,6 +35,7 @@ var ErrEmptyProperty = errors.New("notification property cannot be empty")
 // destination with a severity level.
 type Notification struct {
 	destination string // Where the notification is delivered
+	title       string // Notification Title, or subject
 	message     string // Notification content
 	level       Level  // Severity level, Info unless set via WithLevel
 }
@@ -58,10 +59,14 @@ func WithLevel(level Level) Option {
 // NewNotification is the function that validates and returns Notification
 // instance. Destination and message are required and cannot be empty; the
 // severity level defaults to Info unless WithLevel is passed.
-func NewNotification(destination string, message string, opts ...Option) (Notification, error) {
+func NewNotification(destination string, title string, message string, opts ...Option) (Notification, error) {
 
 	if destination == "" {
 		return Notification{}, fmt.Errorf("%w: destination", ErrEmptyProperty)
+	}
+
+	if title == "" {
+		return Notification{}, fmt.Errorf("%w: title", ErrEmptyProperty)
 	}
 
 	if message == "" {
@@ -71,6 +76,7 @@ func NewNotification(destination string, message string, opts ...Option) (Notifi
 	notification := Notification{
 		destination: destination,
 		message:     message,
+		title:       title,
 	}
 
 	for _, opt := range opts {
@@ -90,6 +96,11 @@ func (notification *Notification) Destination() string {
 // Message returns the notification content.
 func (notification *Notification) Message() string {
 	return notification.message
+}
+
+// Title returns the notification title.
+func (notification *Notification) Title() string {
+	return notification.title
 }
 
 // Level returns the notification severity level.
@@ -117,6 +128,7 @@ func (level Level) String() string {
 func (notification Notification) LogValue() slog.Value {
 	return slog.GroupValue(
 		slog.String("destination", notification.Destination()),
+		slog.String("title", notification.Title()),
 		slog.String("level", notification.Level().String()),
 	)
 }

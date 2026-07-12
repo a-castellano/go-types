@@ -11,7 +11,7 @@ import (
 
 func TestNotificationWithEmptyDestination(t *testing.T) {
 
-	_, err := NewNotification("", "")
+	_, err := NewNotification("", "", "")
 
 	if err == nil {
 		t.Fatalf("TestNotificationWithEmptyDestination should fail.")
@@ -24,9 +24,24 @@ func TestNotificationWithEmptyDestination(t *testing.T) {
 	}
 }
 
+func TestNotificationWithEmptyTitle(t *testing.T) {
+
+	_, err := NewNotification("toSomeone", "", "")
+
+	if err == nil {
+		t.Fatalf("TestNotificationWithEmptyTitle should fail.")
+	}
+
+	expectedError := "notification property cannot be empty: title"
+
+	if err.Error() != expectedError {
+		t.Fatalf("TestNotificationWithEmptyTitle error should be \"%s\" but it was \"%s\".", expectedError, err.Error())
+	}
+}
+
 func TestNotificationWithEmptyMessage(t *testing.T) {
 
-	_, err := NewNotification("toSomeone", "")
+	_, err := NewNotification("toSomeone", "title", "")
 
 	if err == nil {
 		t.Fatalf("TestNotificationWithEmptyMessage should fail.")
@@ -41,7 +56,7 @@ func TestNotificationWithEmptyMessage(t *testing.T) {
 
 func TestNotificationWithInvalidLevel(t *testing.T) {
 
-	_, err := NewNotification("toSomeone", "some message", WithLevel(2000))
+	_, err := NewNotification("toSomeone", "title", "message", WithLevel(2000))
 
 	if err == nil {
 		t.Fatalf("TestNotificationWithInvalidLevel should fail.")
@@ -57,10 +72,11 @@ func TestNotificationWithInvalidLevel(t *testing.T) {
 func TestNotification(t *testing.T) {
 
 	destination := "toSomeone"
+	title := "Title"
 	message := "some message"
 	level := Warning
 
-	notification, err := NewNotification(destination, message, WithLevel(level))
+	notification, err := NewNotification(destination, title, message, WithLevel(level))
 
 	if err != nil {
 		t.Fatalf("TestNotification should not fail with valid parameters, error was \"%s\"", err.Error())
@@ -81,10 +97,11 @@ func TestNotification(t *testing.T) {
 func TestLogValue(t *testing.T) {
 
 	destination := "toSomeone"
+	title := "Title"
 	message := "some message"
 	level := Warning
 
-	notification, err := NewNotification(destination, message, WithLevel(level))
+	notification, err := NewNotification(destination, title, message, WithLevel(level))
 
 	if err != nil {
 		t.Fatalf("TestNotification should not fail with valid parameters, error was \"%s\"", err.Error())
