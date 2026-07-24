@@ -14,10 +14,11 @@ type envVariable struct {
 }
 
 var envVariables = map[string]envVariable{
-	"appName":                {VariableName: "APP_NAME"},
-	"telemetryEnabled":       {VariableName: "ENABLE_TELEMETRY"},
-	"otelServiceName":        {VariableName: "OTEL_SERVICE_NAME"},
-	"otelResourceAttributes": {VariableName: "OTEL_RESOURCE_ATTRIBUTES"},
+	"appName":                  {VariableName: "APP_NAME"},
+	"telemetryEnabled":         {VariableName: "ENABLE_TELEMETRY"},
+	"otelServiceName":          {VariableName: "OTEL_SERVICE_NAME"},
+	"otelResourceAttributes":   {VariableName: "OTEL_RESOURCE_ATTRIBUTES"},
+	"otelExporterOTLPEndpoint": {VariableName: "OTEL_EXPORTER_OTLP_ENDPOINT"},
 }
 
 func setUp() {
@@ -57,16 +58,15 @@ func TestOpenTelemetryConfigWithoutEnvVariables(t *testing.T) {
 	_, err := NewConfig()
 
 	if err == nil {
-		t.Errorf("NewConfig method without any env variable set should fail, error was '%s'.", err.Error())
-	} else {
-		expectedError := "env variable \"APP_NAME\" must be defined and have a value"
-		if err.Error() != expectedError {
-			t.Fatalf("Expected error '%s' but got '%s'", expectedError, err.Error())
-		}
+		t.Fatalf("NewConfig method without any env variable set should fail, error was '%s'.", err.Error())
+	}
+	expectedError := "env variable \"APP_NAME\" must be defined and have a value"
+	if err.Error() != expectedError {
+		t.Fatalf("Expected error '%s' but got '%s'", expectedError, err.Error())
 	}
 }
 
-func TestOpenTelemetryConfigWithAppNameAndOtelServiceNameVariable(t *testing.T) {
+func TestOpenTelemetryConfigWithappNameAndOtelServiceNameVariable(t *testing.T) {
 
 	setUp()
 	defer teardown()
@@ -77,17 +77,16 @@ func TestOpenTelemetryConfigWithAppNameAndOtelServiceNameVariable(t *testing.T) 
 	_, err := NewConfig()
 
 	if err == nil {
-		t.Errorf("NewConfig method with \"APP_NAME\" and \"OTEL_SERVICE_NAME\" env variables set should fail")
-	} else {
-		expectedError := "env variable \"OTEL_SERVICE_NAME\" cannot be defined. APP_NAME will be use to set that value"
-		if err.Error() != expectedError {
-			t.Fatalf("Expected error '%s' but got '%s'", expectedError, err.Error())
-		}
+		t.Fatalf("NewConfig method with \"APP_NAME\" and \"OTEL_SERVICE_NAME\" env variables set should fail")
+	}
 
+	expectedError := "env variable \"OTEL_SERVICE_NAME\" cannot be defined. APP_NAME will be use to set that value"
+	if err.Error() != expectedError {
+		t.Fatalf("Expected error '%s' but got '%s'", expectedError, err.Error())
 	}
 }
 
-func TestOpenTelemetryConfigWithAppNameAndOtelResourceAttributesVariable(t *testing.T) {
+func TestOpenTelemetryConfigWithappNameAndOtelResourceAttributesVariable(t *testing.T) {
 
 	setUp()
 	defer teardown()
@@ -98,14 +97,14 @@ func TestOpenTelemetryConfigWithAppNameAndOtelResourceAttributesVariable(t *test
 	_, err := NewConfig()
 
 	if err == nil {
-		t.Errorf("NewConfig method with \"OTEL_RESOURCE_ATTRIBUTES\" env variable set should fail")
-	} else {
-		expectedError := "env variable \"OTEL_RESOURCE_ATTRIBUTES\" cannot be defined for the time being"
-		if err.Error() != expectedError {
-			t.Fatalf("Expected error '%s' but got '%s'", expectedError, err.Error())
-		}
-
+		t.Fatalf("NewConfig method with \"OTEL_RESOURCE_ATTRIBUTES\" env variable set should fail")
 	}
+
+	expectedError := "env variable \"OTEL_RESOURCE_ATTRIBUTES\" cannot be defined for the time being"
+	if err.Error() != expectedError {
+		t.Fatalf("Expected error '%s' but got '%s'", expectedError, err.Error())
+	}
+
 }
 
 // TestOpenTelemetryConfig covers the happy path with only APP_NAME set: NewConfig
@@ -120,16 +119,17 @@ func TestOpenTelemetryConfig(t *testing.T) {
 	config, err := NewConfig()
 
 	if err != nil {
-		t.Errorf("TestOpenTelemetryConfig should not fail")
-	} else {
-		expectedAppName := "MyApp"
-		if config.AppName != expectedAppName {
-			t.Fatalf("Expected app name '%s' but got '%s'", expectedAppName, config.AppName)
-		}
-		if config.Enabled {
+		t.Fatalf("TestOpenTelemetryConfig should not fail")
+	}
 
-			t.Errorf("TestOpenTelemetryConfig should come with opentelemetry disabled")
-		}
+	expectedappName := "MyApp"
+
+	if config.AppName() != expectedappName {
+		t.Fatalf("Expected app name '%s' but got '%s'", expectedappName, config.appName)
+	}
+
+	if config.Enabled() {
+		t.Fatalf("TestOpenTelemetryConfig should come with opentelemetry disabled")
 	}
 }
 
@@ -145,13 +145,12 @@ func TestOpenTelemetryEnabledFail(t *testing.T) {
 
 	_, err := NewConfig()
 	if err == nil {
-		t.Errorf("NewConfig method with invalid value for \"ENABLE_TELEMETRY\" env variable should fail")
-	} else {
-		expectedError := "env variable \"ENABLE_TELEMETRY\" valid values are only true or false"
-		if err.Error() != expectedError {
-			t.Fatalf("Expected error '%s' but got '%s'", expectedError, err.Error())
-		}
+		t.Fatalf("NewConfig method with invalid value for \"ENABLE_TELEMETRY\" env variable should fail")
+	}
 
+	expectedError := "env variable \"ENABLE_TELEMETRY\" valid values are only true or false"
+	if err.Error() != expectedError {
+		t.Fatalf("Expected error '%s' but got '%s'", expectedError, err.Error())
 	}
 
 }
@@ -169,11 +168,68 @@ func TestOpenTelemetryEnabledConfig(t *testing.T) {
 	config, err := NewConfig()
 
 	if err != nil {
-		t.Errorf("TestOpenTelemetryEnabledConfig should not fail")
-	} else {
-		if !config.Enabled {
-
-			t.Errorf("TestOpenTelemetryEnabledConfig should come with opentelemetry enabled")
-		}
+		t.Fatalf("TestOpenTelemetryEnabledConfig should not fail")
 	}
+	if !config.Enabled() {
+
+		t.Fatalf("TestOpenTelemetryEnabledConfig should come with opentelemetry enabled")
+	}
+	if config.ExporterType() != Stdout {
+
+		t.Errorf("TestOpenTelemetryEnabledConfig exporterType should be Stdout")
+	}
+
+}
+
+func TestOpenTelemetryEnabledInvalidExporterURL(t *testing.T) {
+
+	setUp()
+	defer teardown()
+
+	os.Setenv(envVariables["appName"].VariableName, "MyApp")
+	os.Setenv(envVariables["telemetryEnabled"].VariableName, "true")
+	os.Setenv(envVariables["otelExporterOTLPEndpoint"].VariableName, "12")
+
+	_, err := NewConfig()
+
+	if err == nil {
+		t.Fatalf("TestOpenTelemetryEnabledInvalidExporterURL should fail")
+	}
+	expectedError := "env variable \"OTEL_EXPORTER_OTLP_ENDPOINT\" content is not a valid endpoint"
+	if err.Error() != expectedError {
+		t.Fatalf("Expected error '%s' but got '%s'", expectedError, err.Error())
+	}
+
+}
+
+func TestOpenTelemetryValidExporterURL(t *testing.T) {
+
+	setUp()
+	defer teardown()
+
+	os.Setenv(envVariables["appName"].VariableName, "MyApp")
+	os.Setenv(envVariables["telemetryEnabled"].VariableName, "true")
+
+	ExporterURL := "http://localhost:12345"
+
+	os.Setenv(envVariables["otelExporterOTLPEndpoint"].VariableName, ExporterURL)
+
+	config, err := NewConfig()
+
+	if err != nil {
+		t.Fatalf("TestOpenTelemetryValidExporterURL should not fail")
+	}
+	if !config.Enabled() {
+
+		t.Fatalf("TestOpenTelemetryValidExporterURL should come with opentelemetry enabled")
+	}
+	if config.ExporterType() != URL {
+
+		t.Errorf("TestOpenTelemetryValidExporterURL exporterType should be URL")
+	}
+	if config.ExporterURL() != ExporterURL {
+
+		t.Errorf("TestOpenTelemetryValidExporterURL URL should be \"%s\", it was \"%s\"", ExporterURL, config.ExporterURL())
+	}
+
 }

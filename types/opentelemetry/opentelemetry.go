@@ -2,21 +2,49 @@ package opentelemetry
 
 import (
 	"errors"
+	"net/url"
 	"os"
+)
+
+type ExporterType int
+
+// Severity levels, ordered from least to most severe. Info is the zero value,
+// so it is the level any Notification built without WithLevel defaults to.
+const (
+	Stdout ExporterType = iota
+	URL
 )
 
 // Config is a type that holds the data required to configure OpenTelemetry.
 type Config struct {
-	AppName string // The name of the app, sourced from APP_NAME and used as the telemetry service.name
-	Enabled bool   // Whether telemetry is active, sourced from ENABLE_TELEMETRY; defaults to false (opt-in)
+	appName      string // The name of the app, sourced from APP_NAME and used as the telemetry service.name
+	enabled      bool   // Whether telemetry is active, sourced from ENABLE_TELEMETRY; defaults to false (opt-in)
+	exporterType ExporterType
+	exporterURL  string
+}
+
+func (c *Config) AppName() string {
+	return c.appName
+}
+
+func (c *Config) Enabled() bool {
+	return c.enabled
+}
+
+func (c *Config) ExporterType() ExporterType {
+	return c.exporterType
+}
+
+func (c *Config) ExporterURL() string {
+	return c.exporterURL
 }
 
 // NewConfig is the function that validates and returns Config instance
 func NewConfig() (*Config, error) {
 	config := Config{}
 
-	config.AppName = os.Getenv("APP_NAME")
-	if config.AppName == "" {
+	config.appName = os.Getenv("APP_NAME")
+	if config.appName == "" {
 		return nil, errors.New("env variable \"APP_NAME\" must be defined and have a value")
 	}
 
@@ -36,12 +64,28 @@ func NewConfig() (*Config, error) {
 
 	enableFlagValue, enableFlagDefined := os.LookupEnv("ENABLE_TELEMETRY")
 	// ENABLE_TELEMETRY is the single source of truth for whether telemetry is active.
-	// It is optional: when unset, Enabled stays false (opt-in). Only "true" or "false" are accepted.
+	// It is optional: when unset, enabled stays false (opt-in). Only "true" or "false" are accepted.
 	if enableFlagDefined {
 		if enableFlagValue != "true" && enableFlagValue != "false" {
 			return nil, errors.New("env variable \"ENABLE_TELEMETRY\" valid values are only true or false")
 		}
-		config.Enabled = enableFlagValue == "true"
+		config.enabled = enableFlagValue == "true"
 	}
+
+	if config.enabled {
+		OtelExporter, OtelExporerVarDefined := os.LookupEnv("OTEL_EXPORTER_OTLP_ENDPOINT")
+
+		if OtelExporerVarDefined {
+			_, parseError := url.ParseRequestURI(OtelExporter)
+			if parseError != nil {
+				return nil, errors.New("env variable \"OTEL_EXPORTER_OTLP_ENDPOINT\" content is not a valid endpoint")
+			}
+			config.exporterType = URL
+			config.exporterURL = OtelExporter
+		} else {
+			config.exporterType = Stdout
+		}
+	}
+
 	return &config, nil
 }
