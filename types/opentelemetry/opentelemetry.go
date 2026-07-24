@@ -80,6 +80,8 @@ func NewConfig() (*Config, error) {
 	if config.enabled {
 		otelExporter, otelExporterVarDefined := os.LookupEnv("OTEL_EXPORTER_OTLP_ENDPOINT")
 
+		config.exporterType = Stdout
+
 		if otelExporterVarDefined {
 			parsedURL, parseError := url.ParseRequestURI(otelExporter)
 			if parseError != nil {
@@ -94,8 +96,6 @@ func NewConfig() (*Config, error) {
 
 			config.exporterType = OTLP
 			config.exporterURL = otelExporter
-		} else {
-			config.exporterType = Stdout
 		}
 	}
 
