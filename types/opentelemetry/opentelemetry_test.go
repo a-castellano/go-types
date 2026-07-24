@@ -202,6 +202,48 @@ func TestOpenTelemetryEnabledInvalidExporterURL(t *testing.T) {
 
 }
 
+func TestOpenTelemetryEnabledInvalidExporterURLSchema(t *testing.T) {
+
+	setUp()
+	defer teardown()
+
+	os.Setenv(envVariables["appName"].VariableName, "MyApp")
+	os.Setenv(envVariables["telemetryEnabled"].VariableName, "true")
+	os.Setenv(envVariables["otelExporterOTLPEndpoint"].VariableName, "jttl://localhost:21321")
+
+	_, err := NewConfig()
+
+	if err == nil {
+		t.Fatalf("TestOpenTelemetryEnabledInvalidExporterURLSchema should fail")
+	}
+	expectedError := "env variable \"OTEL_EXPORTER_OTLP_ENDPOINT\" schema is not a valid, only http and https are accepted"
+	if err.Error() != expectedError {
+		t.Fatalf("Expected error '%s' but got '%s'", expectedError, err.Error())
+	}
+
+}
+
+func TestOpenTelemetryEnabledInvalidExporterURLHost(t *testing.T) {
+
+	setUp()
+	defer teardown()
+
+	os.Setenv(envVariables["appName"].VariableName, "MyApp")
+	os.Setenv(envVariables["telemetryEnabled"].VariableName, "true")
+	os.Setenv(envVariables["otelExporterOTLPEndpoint"].VariableName, "http://:21321")
+
+	_, err := NewConfig()
+
+	if err == nil {
+		t.Fatalf("TestOpenTelemetryEnabledInvalidExporterURLHost should fail")
+	}
+	expectedError := "env variable \"OTEL_EXPORTER_OTLP_ENDPOINT\" hostname is empty"
+	if err.Error() != expectedError {
+		t.Fatalf("Expected error '%s' but got '%s'", expectedError, err.Error())
+	}
+
+}
+
 func TestOpenTelemetryValidExporterURL(t *testing.T) {
 
 	setUp()
@@ -223,9 +265,9 @@ func TestOpenTelemetryValidExporterURL(t *testing.T) {
 
 		t.Fatalf("TestOpenTelemetryValidExporterURL should come with opentelemetry enabled")
 	}
-	if config.ExporterType() != URL {
+	if config.ExporterType() != OTLP {
 
-		t.Errorf("TestOpenTelemetryValidExporterURL exporterType should be URL")
+		t.Errorf("TestOpenTelemetryValidExporterURL exporterType should be OTLP")
 	}
 	if config.ExporterURL() != ExporterURL {
 

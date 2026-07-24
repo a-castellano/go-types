@@ -12,7 +12,7 @@ type ExporterType int
 // so it is the level any Notification built without WithLevel defaults to.
 const (
 	Stdout ExporterType = iota
-	URL
+	OTLP
 )
 
 // Config is a type that holds the data required to configure OpenTelemetry.
@@ -76,11 +76,18 @@ func NewConfig() (*Config, error) {
 		OtelExporter, OtelExporerVarDefined := os.LookupEnv("OTEL_EXPORTER_OTLP_ENDPOINT")
 
 		if OtelExporerVarDefined {
-			_, parseError := url.ParseRequestURI(OtelExporter)
+			parsedURL, parseError := url.ParseRequestURI(OtelExporter)
 			if parseError != nil {
 				return nil, errors.New("env variable \"OTEL_EXPORTER_OTLP_ENDPOINT\" content is not a valid endpoint")
 			}
-			config.exporterType = URL
+			if parsedURL.Scheme != "http" && parsedURL.Scheme != "https" {
+				return nil, errors.New("env variable \"OTEL_EXPORTER_OTLP_ENDPOINT\" schema is not a valid, only http and https are accepted")
+			}
+			if parsedURL.Hostname() == "" {
+				return nil, errors.New("env variable \"OTEL_EXPORTER_OTLP_ENDPOINT\" hostname is empty")
+			}
+
+			config.exporterType = OTLP
 			config.exporterURL = OtelExporter
 		} else {
 			config.exporterType = Stdout
