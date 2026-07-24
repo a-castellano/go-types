@@ -6,10 +6,11 @@ import (
 	"os"
 )
 
+// ExporterType identifies which exporter family the telemetry pipeline will use.
 type ExporterType int
 
-// Severity levels, ordered from least to most severe. Info is the zero value,
-// so it is the level any Notification built without WithLevel defaults to.
+// Exporter types. Stdout is the zero value, used when OTEL_EXPORTER_OTLP_ENDPOINT
+// is not defined; OTLP is used when the endpoint is set.
 const (
 	Stdout ExporterType = iota
 	OTLP
@@ -23,18 +24,22 @@ type Config struct {
 	exporterURL  string
 }
 
+// AppName returns the name of the app, used as the telemetry service.name.
 func (c *Config) AppName() string {
 	return c.appName
 }
 
+// Enabled returns whether telemetry is active.
 func (c *Config) Enabled() bool {
 	return c.enabled
 }
 
+// ExporterType returns the exporter type, derived from OTEL_EXPORTER_OTLP_ENDPOINT.
 func (c *Config) ExporterType() ExporterType {
 	return c.exporterType
 }
 
+// ExporterURL returns the OTLP endpoint URL; it is empty when the exporter type is Stdout.
 func (c *Config) ExporterURL() string {
 	return c.exporterURL
 }
@@ -48,17 +53,17 @@ func NewConfig() (*Config, error) {
 		return nil, errors.New("env variable \"APP_NAME\" must be defined and have a value")
 	}
 
-	_, OtelServiceNameVarDefined := os.LookupEnv("OTEL_SERVICE_NAME")
+	_, otelServiceNameVarDefined := os.LookupEnv("OTEL_SERVICE_NAME")
 	// APP_NAME is the only accepted source for service.name, so OTEL_SERVICE_NAME must not be set
 
-	if OtelServiceNameVarDefined {
+	if otelServiceNameVarDefined {
 		return nil, errors.New("env variable \"OTEL_SERVICE_NAME\" cannot be defined. APP_NAME will be use to set that value")
 	}
 
-	_, OtelResourceAttributesVarDefined := os.LookupEnv("OTEL_RESOURCE_ATTRIBUTES")
+	_, otelResourceAttributesVarDefined := os.LookupEnv("OTEL_RESOURCE_ATTRIBUTES")
 	// For the time being this variable is forbidden, its values will be managed if required
 
-	if OtelResourceAttributesVarDefined {
+	if otelResourceAttributesVarDefined {
 		return nil, errors.New("env variable \"OTEL_RESOURCE_ATTRIBUTES\" cannot be defined for the time being")
 	}
 
@@ -73,22 +78,22 @@ func NewConfig() (*Config, error) {
 	}
 
 	if config.enabled {
-		OtelExporter, OtelExporerVarDefined := os.LookupEnv("OTEL_EXPORTER_OTLP_ENDPOINT")
+		otelExporter, otelExporterVarDefined := os.LookupEnv("OTEL_EXPORTER_OTLP_ENDPOINT")
 
-		if OtelExporerVarDefined {
-			parsedURL, parseError := url.ParseRequestURI(OtelExporter)
+		if otelExporterVarDefined {
+			parsedURL, parseError := url.ParseRequestURI(otelExporter)
 			if parseError != nil {
 				return nil, errors.New("env variable \"OTEL_EXPORTER_OTLP_ENDPOINT\" content is not a valid endpoint")
 			}
 			if parsedURL.Scheme != "http" && parsedURL.Scheme != "https" {
-				return nil, errors.New("env variable \"OTEL_EXPORTER_OTLP_ENDPOINT\" schema is not a valid, only http and https are accepted")
+				return nil, errors.New("env variable \"OTEL_EXPORTER_OTLP_ENDPOINT\" scheme is not valid, only http and https are accepted")
 			}
 			if parsedURL.Hostname() == "" {
 				return nil, errors.New("env variable \"OTEL_EXPORTER_OTLP_ENDPOINT\" hostname is empty")
 			}
 
 			config.exporterType = OTLP
-			config.exporterURL = OtelExporter
+			config.exporterURL = otelExporter
 		} else {
 			config.exporterType = Stdout
 		}

@@ -2,7 +2,9 @@
 
 This type manages OpenTelemetry configs.
 
-Unlike the other config types, this one mostly validates the environment rather than reading values: the service identity comes from `APP_NAME` (the same variable `slog` already requires), and every other standard `OTEL_*` variable is left to the OpenTelemetry SDK to read on its own. The SDK never derives the service name from `APP_NAME`; building the Resource attribute is the SDK startup code's job, not this type's.
+Unlike the other config types, this one mostly validates the environment rather than reading values: the service identity comes from `APP_NAME` (the same variable `slog` already requires), the exporter destination from `OTEL_EXPORTER_OTLP_ENDPOINT`, and every other standard `OTEL_*` variable is left to the OpenTelemetry SDK to read on its own. The SDK never derives the service name from `APP_NAME`; building the Resource attribute is the SDK startup code's job, not this type's.
+
+The resulting `Config` is read-only: its values are set once by `NewConfig` and exposed through the `AppName()`, `Enabled()`, `ExporterType()` and `ExporterURL()` getters.
 
 ## Required variables
 
@@ -13,6 +15,7 @@ The following env variable must be defined when using this type:
 ## Optional variables
 
 - `ENABLE_TELEMETRY` is the single source of truth for whether telemetry is active. It is optional and, when unset, telemetry is disabled (opt-in). The only accepted values are the strings `true` and `false`; any other value makes `NewConfig` return an error. The SDK startup code in `go-services` reads this flag to decide between wiring the real SDK and returning a no-op startup, so the on/off decision lives here in the shared config rather than scattered in each app.
+- `OTEL_EXPORTER_OTLP_ENDPOINT` selects the exporter: when it is set, `ExporterType()` is `OTLP` and `ExporterURL()` returns its value; when it is absent, `ExporterType()` is `Stdout`. The value must be a valid URL with an `http` or `https` scheme (the scheme decides whether the connection uses TLS) and a non-empty hostname; anything else makes `NewConfig` return an error. The variable is only read and validated when telemetry is enabled — with `ENABLE_TELEMETRY` unset or `false`, its content is ignored.
 
 ## Forbidden variables
 
@@ -23,4 +26,4 @@ These variables must not be defined; `NewConfig` returns an error if any of them
 
 ## Everything else
 
-Any other `OTEL_*` variable (exporter, endpoint, protocol, sampler, ...) is intentionally not handled here. The SDK reads them directly from the environment, so there is no point duplicating them in this type.
+Any other `OTEL_*` variable (headers, timeout, sampler, ...) is intentionally not handled here. The SDK reads them directly from the environment, so there is no point duplicating them in this type.
