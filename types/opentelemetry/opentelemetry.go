@@ -44,6 +44,30 @@ func (c *Config) ExporterURL() string {
 	return c.exporterURL
 }
 
+func validateOTELURL(config *Config) error {
+	otelExporter, otelExporterVarDefined := os.LookupEnv("OTEL_EXPORTER_OTLP_ENDPOINT")
+
+	config.exporterType = Stdout
+
+	if otelExporterVarDefined {
+
+		parsedURL, parseError := url.ParseRequestURI(otelExporter)
+		if parseError != nil {
+			return errors.New("env variable \"OTEL_EXPORTER_OTLP_ENDPOINT\" content is not a valid endpoint")
+		}
+		if parsedURL.Scheme != "http" && parsedURL.Scheme != "https" {
+			return errors.New("env variable \"OTEL_EXPORTER_OTLP_ENDPOINT\" scheme is not valid, only http and https are accepted")
+		}
+		if parsedURL.Hostname() == "" {
+			return errors.New("env variable \"OTEL_EXPORTER_OTLP_ENDPOINT\" hostname is empty")
+		}
+
+		config.exporterType = OTLP
+		config.exporterURL = otelExporter
+	}
+	return nil
+}
+
 // NewConfig is the function that validates and returns Config instance
 func NewConfig() (*Config, error) {
 	config := Config{}
@@ -78,24 +102,9 @@ func NewConfig() (*Config, error) {
 	}
 
 	if config.enabled {
-		otelExporter, otelExporterVarDefined := os.LookupEnv("OTEL_EXPORTER_OTLP_ENDPOINT")
-
-		config.exporterType = Stdout
-
-		if otelExporterVarDefined {
-			parsedURL, parseError := url.ParseRequestURI(otelExporter)
-			if parseError != nil {
-				return nil, errors.New("env variable \"OTEL_EXPORTER_OTLP_ENDPOINT\" content is not a valid endpoint")
-			}
-			if parsedURL.Scheme != "http" && parsedURL.Scheme != "https" {
-				return nil, errors.New("env variable \"OTEL_EXPORTER_OTLP_ENDPOINT\" scheme is not valid, only http and https are accepted")
-			}
-			if parsedURL.Hostname() == "" {
-				return nil, errors.New("env variable \"OTEL_EXPORTER_OTLP_ENDPOINT\" hostname is empty")
-			}
-
-			config.exporterType = OTLP
-			config.exporterURL = otelExporter
+		otelURLErr := validateOTELURL(&config)
+		if otelURLErr != nil {
+			return nil, otelURLErr
 		}
 	}
 
