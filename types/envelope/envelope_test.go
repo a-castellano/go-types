@@ -170,3 +170,30 @@ func TestMarshalUnmarshalString(t *testing.T) {
 
 	}
 }
+
+// TestMarshalUnmarshalStringEmptyBody covers the HTTP case, where the domain payload
+// travels as the request body and the envelope carries only the trace context, so Body
+// is left empty. This test was written by an AI agent (Claude).
+func TestMarshalUnmarshalStringEmptyBody(t *testing.T) {
+
+	carrier := map[string]string{"traceparent": "00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01"}
+	envelope := Envelope{Carrier: carrier}
+
+	marshaledEnvelopeString, err := envelope.MarshalString()
+	if err != nil {
+		t.Fatalf("TestMarshalUnmarshalStringEmptyBody should not fail when marshaledEnvelopeString is generated, error was '%s'", err.Error())
+	}
+
+	receivedEnvelope, err := UnmarshalString(marshaledEnvelopeString)
+	if err != nil {
+		t.Fatalf("TestMarshalUnmarshalStringEmptyBody should not fail when envelope is unmarshaled again, error was '%s'", err.Error())
+	}
+
+	if len(receivedEnvelope.Body) != 0 {
+		t.Fatalf("body should stay empty after marshal unmarshal operation")
+	}
+
+	if !maps.Equal(carrier, receivedEnvelope.Carrier) {
+		t.Fatalf("carrier should not change after marshal unmarshal operation")
+	}
+}
