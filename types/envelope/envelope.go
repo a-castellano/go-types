@@ -1,6 +1,7 @@
 package envelope
 
 import (
+	"encoding/base64"
 	"encoding/json"
 )
 
@@ -27,4 +28,27 @@ func Unmarshal(data []byte) (*Envelope, error) {
 		return nil, err
 	}
 	return &envelope, err
+}
+
+func (envelope *Envelope) MarshalString() (string, error) {
+
+	marshaledData, err := envelope.Marshal()
+
+	return base64.StdEncoding.EncodeToString(marshaledData), err
+}
+
+func UnmarshalString(encodedString string) (*Envelope, error) {
+	var emptyEnvelope Envelope
+	decodedBytes, err := base64.StdEncoding.DecodeString(encodedString)
+	if err != nil {
+		return &emptyEnvelope, err
+	}
+
+	envelope, unmashalError := Unmarshal(decodedBytes)
+
+	if unmashalError != nil {
+		return &emptyEnvelope, unmashalError
+	}
+
+	return envelope, err
 }
