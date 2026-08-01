@@ -30,6 +30,17 @@ func Unmarshal(data []byte) (*Envelope, error) {
 	return &envelope, err
 }
 
+// MarshalString serializes the Envelope and returns it base64-encoded, so it can be
+// handed to a transport that moves text rather than bytes and needs a single safe
+// value, such as an HTTP header.
+//
+// The alphabet is standard base64 with padding (encoding/base64.StdEncoding). It is
+// part of the wire contract: producer and consumer must agree on it, so it cannot be
+// swapped without breaking every service already speaking this protocol.
+//
+// The name is deliberately not MarshalText. Implementing encoding.TextMarshaler would
+// change what json.Marshal produces for an Envelope, and since Marshal is itself
+// json.Marshal, the two would call each other until the stack ran out.
 func (envelope *Envelope) MarshalString() (string, error) {
 
 	marshaledData, err := envelope.Marshal()
@@ -37,6 +48,12 @@ func (envelope *Envelope) MarshalString() (string, error) {
 	return base64.StdEncoding.EncodeToString(marshaledData), err
 }
 
+// UnmarshalString validates and returns an Envelope instance from its base64 string
+// representation, the inverse of MarshalString.
+//
+// The input must use the same standard base64 alphabet with padding that MarshalString
+// produces; anything else, and anything that decodes to bytes which are not a valid
+// envelope, is reported as an error.
 func UnmarshalString(encodedString string) (*Envelope, error) {
 	var emptyEnvelope Envelope
 	decodedBytes, err := base64.StdEncoding.DecodeString(encodedString)
@@ -44,11 +61,11 @@ func UnmarshalString(encodedString string) (*Envelope, error) {
 		return &emptyEnvelope, err
 	}
 
-	envelope, unmashalError := Unmarshal(decodedBytes)
+	envelope, unmarshalError := Unmarshal(decodedBytes)
 
-	if unmashalError != nil {
-		return &emptyEnvelope, unmashalError
+	if unmarshalError != nil {
+		return &emptyEnvelope, unmarshalError
 	}
 
-	return envelope, err
+	return envelope, nil
 }
