@@ -37,7 +37,7 @@ Because `plan/` is git-ignored, documentation must never reference any document 
 
 ## Running Go
 
-Never run Go against the host toolchain. Every Go task (tests, `go vet`, builds, coverage, `go list`, etc.) must run inside the project's development container, defined in `development/docker-compose.yml`. The same image — `harbor.windmaker.net/limani/base_golang_1_26` — is used in local development, CI and production, so the environment stays identical everywhere.
+Never run Go against the host toolchain. Every Go task (tests, `go vet`, builds, coverage, `go list`, etc.) must run inside the project's development container, defined in `development/docker-compose.yml`. The same image — `harbor.windmaker.net/limani/base_golang_1_27` — is used in local development, CI and production, so the environment stays identical everywhere.
 
 Before running any Go command, check whether the container is already running — the developer may have brought it up already. Use something like `podman compose -f development/docker-compose.yml ps` (or `podman ps`) and only run `up -d` if it is not already up. Then run commands through it, e.g.:
 
@@ -47,6 +47,10 @@ podman compose -f development/docker-compose.yml exec golang go vet ./...
 ```
 
 The Go module cache persists in `development/.gomodcache/` (git-ignored), so dependencies are not re-downloaded each run. The dot prefix is deliberate: Go package patterns (`./...`) skip dot-directories, so the in-tree cache is never walked by `go test`, `go get` or `go mod tidy`.
+
+## Git Changes
+
+Do not apply changes to git (stage, commit, push) unless explicitly requested. Update files freely, but let the developer decide when to commit.
 
 ## Exceptions (when explicitly requested)
 
