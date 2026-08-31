@@ -1,4 +1,4 @@
-image: harbor.windmaker.net/limani/base_golang_1_26
+image: harbor.windmaker.net/limani/base_golang_1_27
 
 stages:
   - lint

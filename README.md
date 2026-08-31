@@ -22,7 +22,7 @@ The aim of this repo is to save time and repeated code by unifying them in one s
 
 # Local development
 
-I run every golang task (tests, vet, coverage…) inside a container, **never against a host toolchain**. The same image — `harbor.windmaker.net/limani/base_golang_1_26` — is used in local development, CI and production, so the environment is identical everywhere.
+I run every golang task (tests, vet, coverage…) inside a container, **never against a host toolchain**. The same image — `harbor.windmaker.net/limani/base_golang_1_27` — is used in local development, CI and production, so the environment is identical everywhere.
 
 The development container is defined in [development/docker-compose.yml](development/docker-compose.yml). It mounts the repo into `/app` and persists the Go module cache in `development/gomodcache/` (git-ignored) so dependencies are not re-downloaded on every run.
 
